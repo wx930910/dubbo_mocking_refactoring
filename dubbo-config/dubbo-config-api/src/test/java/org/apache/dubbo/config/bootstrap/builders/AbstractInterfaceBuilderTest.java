@@ -305,7 +305,7 @@ class AbstractInterfaceBuilderTest {
 
 	private static class MockInterfaceBuilder {
 
-		public AbstractInterfaceBuilder<AbstractInterfaceConfig, AbstractInterfaceBuilder> mockingInstance;
+		public AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> mockingInstance;
 		public AbstractBuilder<AbstractConfig, AbstractBuilder> MockedBuilder;
 
 		public MockInterfaceBuilder() {
