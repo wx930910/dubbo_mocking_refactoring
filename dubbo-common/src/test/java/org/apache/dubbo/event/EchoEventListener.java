@@ -17,16 +17,32 @@
 package org.apache.dubbo.event;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * {@link EchoEvent} {@link EventListener}
  *
  * @since 2.7.5
  */
-public class EchoEventListener extends AbstractEventListener<EchoEvent> implements Serializable {
+public class EchoEventListener implements Serializable, EventListener<EchoEvent> {
 
-    @Override
-    public void handleEvent(EchoEvent event) {
-        println("EchoEventListener : " + event);
-    }
+	private final AtomicInteger eventOccurs = new AtomicInteger(0);
+
+	@Override
+	public final void onEvent(EchoEvent event) {
+		eventOccurs.getAndIncrement();
+		handleEvent(event);
+	}
+
+	public int getEventOccurs() {
+		return eventOccurs.get();
+	}
+
+	protected void println(String message) {
+		System.out.printf("[%s] %s\n", Thread.currentThread().getName(), message);
+	}
+
+	public void handleEvent(EchoEvent event) {
+		println("EchoEventListener : " + event);
+	}
 }

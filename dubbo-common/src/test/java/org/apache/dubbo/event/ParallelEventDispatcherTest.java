@@ -16,14 +16,14 @@
  */
 package org.apache.dubbo.event;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * {@link ParallelEventDispatcher} Test
@@ -32,28 +32,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class ParallelEventDispatcherTest {
 
-    private EventDispatcher eventDispatcher;
+	private EventDispatcher eventDispatcher;
 
-    private AbstractEventListener listener;
+	private EchoEventListener listener;
 
-    @BeforeEach
-    public void init() {
-        eventDispatcher = new ParallelEventDispatcher();
-        listener = new EchoEventListener();
-        eventDispatcher.addEventListener(listener);
-    }
+	@BeforeEach
+	public void init() {
+		eventDispatcher = new ParallelEventDispatcher();
+		listener = new EchoEventListener();
+		eventDispatcher.addEventListener(listener);
+	}
 
-    @Test
-    public void testDispatchEvent() throws InterruptedException {
-        eventDispatcher.dispatch(new EchoEvent("Hello,World"));
-        ForkJoinPool.commonPool().awaitTermination(1, TimeUnit.SECONDS);
-        // event has been handled
-        assertEquals(1, listener.getEventOccurs());
-    }
+	@Test
+	public void testDispatchEvent() throws InterruptedException {
+		eventDispatcher.dispatch(new EchoEvent("Hello,World"));
+		ForkJoinPool.commonPool().awaitTermination(1, TimeUnit.SECONDS);
+		// event has been handled
+		assertEquals(1, listener.getEventOccurs());
+	}
 
-    @AfterAll
-    public static void destroy() {
-        ForkJoinPool.commonPool().shutdown();
-    }
+	@AfterAll
+	public static void destroy() {
+		ForkJoinPool.commonPool().shutdown();
+	}
 
 }
