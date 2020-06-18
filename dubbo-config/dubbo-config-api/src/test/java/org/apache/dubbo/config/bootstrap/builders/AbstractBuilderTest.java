@@ -28,14 +28,14 @@ class AbstractBuilderTest {
 
 	@Test
 	void id() {
-		Builder builder = new Builder();
+		AbstractBuilder builder = new MockBuilder().MockedBuilder;
 		builder.id("id");
 		Assertions.assertEquals("id", builder.build().getId());
 	}
 
 	@Test
 	void prefix() {
-		Builder builder = new Builder();
+		AbstractBuilder builder = new MockBuilder().MockedBuilder;
 		builder.prefix("prefix");
 		Assertions.assertEquals("prefix", builder.build().getPrefix());
 	}
@@ -94,7 +94,7 @@ class AbstractBuilderTest {
 
 	@Test
 	void build() {
-		Builder builder = new Builder();
+		AbstractBuilder builder = new MockBuilder().MockedBuilder;
 		builder.id("id");
 		builder.prefix("prefix");
 
@@ -105,6 +105,29 @@ class AbstractBuilderTest {
 		Assertions.assertEquals("prefix", config.getPrefix());
 
 		Assertions.assertNotSame(config, config2);
+	}
+
+	private static class MockBuilder {
+		public AbstractBuilder<AbstractConfig, AbstractBuilder> MockedBuilder;
+
+		public MockBuilder() {
+			this.MockedBuilder = Mockito.mock(AbstractBuilder.class, Mockito.CALLS_REAL_METHODS);
+			mockBuild();
+			mockGetThis();
+		}
+
+		private void mockBuild() {
+			Mockito.when(this.MockedBuilder.build()).thenAnswer(invocation -> {
+				AbstractConfig parameterConfig = new MockConfig().MockedConfig;
+				this.MockedBuilder.build(parameterConfig);
+				return parameterConfig;
+			});
+		}
+
+		protected void mockGetThis() {
+			Mockito.when(this.MockedBuilder.getThis()).thenReturn(this.MockedBuilder);
+		}
+
 	}
 
 	private static class Builder extends AbstractBuilder<AbstractConfig, Builder> {
