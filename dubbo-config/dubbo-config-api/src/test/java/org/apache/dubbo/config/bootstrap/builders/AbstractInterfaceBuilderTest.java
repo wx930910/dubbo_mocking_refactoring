@@ -18,6 +18,7 @@ package org.apache.dubbo.config.bootstrap.builders;
 
 import java.util.Collections;
 
+import org.apache.dubbo.config.AbstractConfig;
 import org.apache.dubbo.config.AbstractInterfaceConfig;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ConfigCenterConfig;
@@ -33,14 +34,14 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void local() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.local("GreetingMock");
 		Assertions.assertEquals("GreetingMock", builder.build().getLocal());
 	}
 
 	@Test
 	void local1() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.local((Boolean) null);
 		Assertions.assertNull(builder.build().getLocal());
 		builder.local(false);
@@ -51,14 +52,14 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void stub() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.stub("GreetingMock");
 		Assertions.assertEquals("GreetingMock", builder.build().getStub());
 	}
 
 	@Test
 	void stub1() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.stub((Boolean) null);
 		Assertions.assertNull(builder.build().getLocal());
 		builder.stub(false);
@@ -69,7 +70,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void monitor() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.monitor("123");
 
 		MonitorConfig monitorConfig = new MonitorConfig("123");
@@ -79,7 +80,7 @@ class AbstractInterfaceBuilderTest {
 	@Test
 	void monitor1() {
 		MonitorConfig monitorConfig = new MonitorConfig("123");
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.monitor(monitorConfig);
 
 		Assertions.assertEquals(monitorConfig, builder.build().getMonitor());
@@ -87,7 +88,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void proxy() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.proxy("mockproxyfactory");
 
 		Assertions.assertEquals("mockproxyfactory", builder.build().getProxy());
@@ -95,7 +96,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void cluster() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.cluster("mockcluster");
 
 		Assertions.assertEquals("mockcluster", builder.build().getCluster());
@@ -103,7 +104,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void filter() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.filter("mockfilter");
 
 		Assertions.assertEquals("mockfilter", builder.build().getFilter());
@@ -111,7 +112,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void listener() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.listener("mockinvokerlistener");
 
 		Assertions.assertEquals("mockinvokerlistener", builder.build().getListener());
@@ -119,7 +120,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void owner() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.owner("owner");
 
 		Assertions.assertEquals("owner", builder.build().getOwner());
@@ -127,7 +128,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void connections() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.connections(1);
 
 		Assertions.assertEquals(1, builder.build().getConnections().intValue());
@@ -135,7 +136,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void layer() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.layer("layer");
 
 		Assertions.assertEquals("layer", builder.build().getLayer());
@@ -145,7 +146,7 @@ class AbstractInterfaceBuilderTest {
 	void application() {
 		ApplicationConfig applicationConfig = new ApplicationConfig();
 
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.application(applicationConfig);
 
 		Assertions.assertEquals(applicationConfig, builder.build().getApplication());
@@ -154,7 +155,7 @@ class AbstractInterfaceBuilderTest {
 	@Test
 	void module() {
 		ModuleConfig moduleConfig = new ModuleConfig();
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.module(moduleConfig);
 
 		Assertions.assertEquals(moduleConfig, builder.build().getModule());
@@ -164,7 +165,7 @@ class AbstractInterfaceBuilderTest {
 	void addRegistries() {
 		RegistryConfig registryConfig = new RegistryConfig();
 
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.addRegistries(Collections.singletonList(registryConfig));
 
 		Assertions.assertEquals(1, builder.build().getRegistries().size());
@@ -176,7 +177,7 @@ class AbstractInterfaceBuilderTest {
 	void addRegistry() {
 		RegistryConfig registryConfig = new RegistryConfig();
 
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.addRegistry(registryConfig);
 
 		Assertions.assertEquals(1, builder.build().getRegistries().size());
@@ -186,7 +187,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void registryIds() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.registryIds("registryIds");
 
 		Assertions.assertEquals("registryIds", builder.build().getRegistryIds());
@@ -194,7 +195,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void onconnect() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.onconnect("onconnect");
 
 		Assertions.assertEquals("onconnect", builder.build().getOnconnect());
@@ -202,7 +203,7 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void ondisconnect() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.ondisconnect("ondisconnect");
 
 		Assertions.assertEquals("ondisconnect", builder.build().getOndisconnect());
@@ -212,7 +213,7 @@ class AbstractInterfaceBuilderTest {
 	void metadataReportConfig() {
 		MetadataReportConfig metadataReportConfig = new MetadataReportConfig();
 
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.metadataReportConfig(metadataReportConfig);
 
 		Assertions.assertEquals(metadataReportConfig, builder.build().getMetadataReportConfig());
@@ -222,7 +223,7 @@ class AbstractInterfaceBuilderTest {
 	void configCenter() {
 		ConfigCenterConfig configCenterConfig = new ConfigCenterConfig();
 
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.configCenter(configCenterConfig);
 
 		Assertions.assertEquals(configCenterConfig, builder.build().getConfigCenter());
@@ -230,14 +231,14 @@ class AbstractInterfaceBuilderTest {
 
 	@Test
 	void callbacks() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.callbacks(2);
 		Assertions.assertEquals(2, builder.build().getCallbacks().intValue());
 	}
 
 	@Test
 	void scope() {
-		InterfaceBuilder builder = new InterfaceBuilder();
+		AbstractInterfaceBuilder<AbstractInterfaceConfig, InterfaceBuilder> builder = new MockInterfaceBuilder().mockingInstance;
 		builder.scope("scope");
 
 		Assertions.assertEquals("scope", builder.build().getScope());
@@ -299,6 +300,26 @@ class AbstractInterfaceBuilderTest {
 		@Override
 		protected InterfaceBuilder getThis() {
 			return this;
+		}
+	}
+
+	private static class MockInterfaceBuilder {
+
+		public AbstractInterfaceBuilder<AbstractInterfaceConfig, AbstractInterfaceBuilder> mockingInstance;
+		public AbstractBuilder<AbstractConfig, AbstractBuilder> MockedBuilder;
+
+		public MockInterfaceBuilder() {
+			this.mockingInstance = Mockito.mock(AbstractInterfaceBuilder.class, Mockito.CALLS_REAL_METHODS);
+			mockBuild();
+			Mockito.doReturn(this.mockingInstance).when(this.mockingInstance).getThis();
+		}
+
+		private void mockBuild() {
+			Mockito.doAnswer(invocation -> {
+				AbstractInterfaceConfig config = new MockInterfaceConfig().mockingInstance;
+				this.mockingInstance.build(config);
+				return config;
+			}).when(this.mockingInstance).build();
 		}
 	}
 
