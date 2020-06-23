@@ -16,38 +16,58 @@
  */
 package org.apache.dubbo.rpc.cluster;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.rpc.Invocation;
 
 /**
  *
  */
 public class RouterTest {
 
-    private static List<Router> routers = new ArrayList<>();
+	private static List<Router> routers = new ArrayList<>();
 
-    @BeforeAll
-    public static void setUp () {
-        CompatibleRouter compatibleRouter = new CompatibleRouter();
-        routers.add(compatibleRouter);
-        CompatibleRouter2 compatibleRouter2 = new CompatibleRouter2();
-        routers.add(compatibleRouter2);
-        NewRouter newRouter = new NewRouter();
-        routers.add(newRouter);
-    }
+	@BeforeAll
+	public static void setUp() {
+		Router compatibleRouter = new MockCompatibleRouter().instance;
+		routers.add(compatibleRouter);
+		CompatibleRouter2 compatibleRouter2 = new CompatibleRouter2();
+		routers.add(compatibleRouter2);
+		NewRouter newRouter = new NewRouter();
+		routers.add(newRouter);
+	}
 
-    @Test
-    public void testCompareTo () {
-        try {
-            Collections.sort(routers);
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            Assertions.assertFalse(false);
-        }
-    }
+	@Test
+	public void testCompareTo() {
+		try {
+			Collections.sort(routers);
+			Assertions.assertTrue(true);
+		} catch (Exception e) {
+			Assertions.assertFalse(false);
+		}
+	}
+
+	static class MockCompatibleRouter {
+		public Router instance;
+
+		public MockCompatibleRouter() {
+			this.instance = Mockito.mock(Router.class, Mockito.withSettings()
+					.defaultAnswer(Mockito.CALLS_REAL_METHODS));
+			Mockito.doReturn(null).when(this.instance).getUrl();
+			Mockito.doReturn(null).when(this.instance).route(Mockito.anyList(),
+					Mockito.any(URL.class), Mockito.any(Invocation.class));
+			Mockito.doReturn(0).when(this.instance)
+					.compareTo(Mockito.any(Router.class));
+		}
+
+	}
+
 }
