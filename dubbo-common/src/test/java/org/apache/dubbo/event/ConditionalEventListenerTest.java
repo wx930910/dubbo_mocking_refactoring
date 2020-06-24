@@ -16,11 +16,12 @@
  */
 package org.apache.dubbo.event;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * {@link ConditionalEventListener} test
@@ -29,49 +30,78 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 public class ConditionalEventListenerTest {
 
-    private final EventDispatcher eventDispatcher = EventDispatcher.getDefaultExtension();
+	private final EventDispatcher eventDispatcher = EventDispatcher
+			.getDefaultExtension();
 
-    @BeforeEach
-    public void init() {
-        eventDispatcher.removeAllEventListeners();
-    }
+	@BeforeEach
+	public void init() {
+		eventDispatcher.removeAllEventListeners();
+	}
 
-    @Test
-    public void testOnEvent() {
+	@Test
+	public void testOnEvent() {
 
-        OnlyHelloWorldEventListener listener = new OnlyHelloWorldEventListener();
+		MockOnlyHelloWorldEventListener listener = new MockOnlyHelloWorldEventListener();
 
-        eventDispatcher.addEventListener(listener);
+		eventDispatcher.addEventListener(listener.instance);
 
-        eventDispatcher.dispatch(new EchoEvent("1"));
+		eventDispatcher.dispatch(new EchoEvent("1"));
 
-        assertNull(listener.getSource());
+		assertNull(listener.getSource());
 
-        eventDispatcher.dispatch(new EchoEvent("Hello,World"));
+		eventDispatcher.dispatch(new EchoEvent("Hello,World"));
 
-        assertEquals("Hello,World", listener.getSource());
+		assertEquals("Hello,World", listener.getSource());
 
-        // fix EventDispatcherTest.testDefaultMethods may contain OnlyHelloWorldEventListener
-        // ( ConditionalEventListenerTest and EventDispatcherTest are running together in one suite case )
-        eventDispatcher.removeAllEventListeners();
-    }
+		// fix EventDispatcherTest.testDefaultMethods may contain
+		// OnlyHelloWorldEventListener
+		// ( ConditionalEventListenerTest and EventDispatcherTest are running
+		// together in one suite case )
+		eventDispatcher.removeAllEventListeners();
+	}
 
-    static class OnlyHelloWorldEventListener implements ConditionalEventListener<EchoEvent> {
+	static class MockOnlyHelloWorldEventListener {
+		public ConditionalEventListener<EchoEvent> instance;
+		private String source;
 
-        private String source;
+		public MockOnlyHelloWorldEventListener() {
+			this.instance = Mockito.mock(ConditionalEventListener.class);
+			Mockito.doAnswer(invocation -> {
+				EchoEvent event = invocation.getArgument(0);
+				return "Hello,World".equals(event.getSource());
+			}).when(this.instance).accept(Mockito.any(EchoEvent.class));
+			Mockito.doAnswer(invocation -> {
+				EchoEvent event = invocation.getArgument(0);
+				source = (String) event.getSource();
+				return null;
+			}).when(this.instance).onEvent(Mockito.any(EchoEvent.class));
+		}
 
-        @Override
-        public boolean accept(EchoEvent event) {
-            return "Hello,World".equals(event.getSource());
-        }
+		public String getSource() {
+			return source;
+		}
 
-        @Override
-        public void onEvent(EchoEvent event) {
-            source = (String) event.getSource();
-        }
+	}
 
-        public String getSource() {
-            return source;
-        }
-    }
+	static class OnlyHelloWorldEventListener
+			implements ConditionalEventListener<EchoEvent> {
+
+		private String source;
+
+		@Override
+		public boolean accept(EchoEvent event) {
+			System.out.println("Accept");
+			return "Hello,World".equals(event.getSource());
+		}
+
+		@Override
+		public void onEvent(EchoEvent event) {
+			System.out.println("On Event");
+			source = (String) event.getSource();
+		}
+
+		public String getSource() {
+			return source;
+		}
+	}
 }
