@@ -39,7 +39,7 @@ public class RouterTest {
 	public static void setUp() {
 		Router compatibleRouter = new MockCompatibleRouter().instance;
 		routers.add(compatibleRouter);
-		CompatibleRouter2 compatibleRouter2 = new CompatibleRouter2();
+		Router compatibleRouter2 = new MockCompatibleRouter().instance;
 		routers.add(compatibleRouter2);
 		NewRouter newRouter = new NewRouter();
 		routers.add(newRouter);
