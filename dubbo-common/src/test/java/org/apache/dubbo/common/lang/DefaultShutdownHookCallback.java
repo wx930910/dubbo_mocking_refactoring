@@ -23,14 +23,14 @@ package org.apache.dubbo.common.lang;
  */
 public class DefaultShutdownHookCallback implements ShutdownHookCallback {
 
-    private boolean executed = false;
+	private boolean executed = false;
 
-    @Override
-    public void callback() throws Throwable {
-        executed = true;
-    }
+	@Override
+	public void callback() throws Throwable {
+		executed = true;
+	}
 
-    public boolean isExecuted() {
-        return executed;
-    }
+	public boolean isExecuted() {
+		return executed;
+	}
 }

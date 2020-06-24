@@ -16,12 +16,13 @@
  */
 package org.apache.dubbo.common.lang;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.mockito.Mockito;
 
 /**
  * {@link ShutdownHookCallbacks}
@@ -30,28 +31,53 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ShutdownHookCallbacksTest {
 
-    private ShutdownHookCallbacks callbacks;
+	private ShutdownHookCallbacks callbacks;
 
-    @BeforeEach
-    public void init() {
-        callbacks = new ShutdownHookCallbacks();
-    }
+	@BeforeEach
+	public void init() {
+		callbacks = new ShutdownHookCallbacks();
+	}
 
-    @Test
-    public void testSingleton() {
-        assertNotNull(callbacks);
-    }
+	@Test
+	public void testSingleton() {
+		assertNotNull(callbacks);
+	}
 
-    @Test
-    public void testCallback() {
-        callbacks.callback();
-        DefaultShutdownHookCallback callback = (DefaultShutdownHookCallback) callbacks.getCallbacks().iterator().next();
-        assertTrue(callback.isExecuted());
-    }
+	@Test
+	public void testCallback() {
+		callbacks.callback();
+		DefaultShutdownHookCallback callback = (DefaultShutdownHookCallback) callbacks
+				.getCallbacks().iterator().next();
+		assertTrue(callback.isExecuted());
+	}
 
-    @AfterEach
-    public void destroy() {
-        callbacks.clear();
-        assertTrue(callbacks.getCallbacks().isEmpty());
-    }
+	@AfterEach
+	public void destroy() {
+		callbacks.clear();
+		assertTrue(callbacks.getCallbacks().isEmpty());
+	}
+
+	static class MockDefaultShutdownHookCallback {
+		public ShutdownHookCallback instace;
+
+		private boolean executed = false;
+
+		public MockDefaultShutdownHookCallback() {
+			this.instace = Mockito.mock(ShutdownHookCallback.class,
+					Mockito.CALLS_REAL_METHODS);
+			try {
+				Mockito.doAnswer(invocation -> {
+					this.executed = true;
+					return null;
+				}).when(this.instace).callback();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
+
+		public boolean isExecuted() {
+			return executed;
+		}
+	}
+
 }
