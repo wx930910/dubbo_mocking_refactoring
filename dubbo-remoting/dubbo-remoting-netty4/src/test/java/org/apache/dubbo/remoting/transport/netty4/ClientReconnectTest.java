@@ -30,9 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-/**
- * Client reconnect test
- */
+/** Client reconnect test. */
 public class ClientReconnectTest {
 	public static void main(String[] args) {
 		System.out.println(3 % 1);
@@ -57,18 +55,16 @@ public class ClientReconnectTest {
 			client.close(2000);
 			server.close(2000);
 		}
-		{
-			int port = NetUtils.getAvailablePort();
-			Client client = startClient(port, 20000);
-			Assertions.assertFalse(client.isConnected());
-			RemotingServer server = startServer(port);
-			for (int i = 0; i < 5; i++) {
-				Thread.sleep(200);
-			}
-			Assertions.assertFalse(client.isConnected());
-			client.close(2000);
-			server.close(2000);
+		int port = NetUtils.getAvailablePort();
+		Client client = startClient(port, 20000);
+		Assertions.assertFalse(client.isConnected());
+		RemotingServer server = startServer(port);
+		for (int i = 0; i < 5; i++) {
+			Thread.sleep(200);
 		}
+		Assertions.assertFalse(client.isConnected());
+		client.close(2000);
+		server.close(2000);
 	}
 
 	public Client startClient(int port, int heartbeat)
@@ -92,22 +88,14 @@ public class ClientReconnectTest {
 			this.instance = Mockito.mock(ExchangeHandlerAdapter.class, Mockito
 					.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
 			try {
-				Mockito.doAnswer(invocation -> {
-					return null;
-				}).when(this.instance).connected(Mockito.any(Channel.class));
-				Mockito.doAnswer(invocation -> {
-					return null;
-				}).when(this.instance).disconnected(Mockito.any(Channel.class));
-				Mockito.doAnswer(invocation -> {
-					return null;
-				}).when(this.instance).caught(Mockito.any(Channel.class),
+				Mockito.doAnswer(invocation -> null).when(this.instance).connected(Mockito.any(Channel.class));
+				Mockito.doAnswer(invocation -> null).when(this.instance).disconnected(Mockito.any(Channel.class));
+				Mockito.doAnswer(invocation -> null).when(this.instance).caught(Mockito.any(Channel.class),
 						Mockito.any(Throwable.class));
 			} catch (RemotingException e) {
 				e.printStackTrace();
 			}
-
 		}
-
 	}
 
 	static class HandlerAdapter extends ExchangeHandlerAdapter {
@@ -124,4 +112,6 @@ public class ClientReconnectTest {
 				throws RemotingException {
 		}
 	}
+
+
 }

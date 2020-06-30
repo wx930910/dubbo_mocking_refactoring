@@ -16,7 +16,6 @@
  */
 package org.apache.dubbo.rpc.cluster;
 
-
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.rpc.AppResponse;
@@ -40,16 +39,14 @@ import static org.mockito.Mockito.mock;
 
 @SuppressWarnings("unchecked")
 public class StickyTest {
-
-    private List<Invoker<StickyTest>> invokers = new ArrayList<Invoker<StickyTest>>();
-
+    private List<Invoker<StickyTest>> invokers = new ArrayList<>();
 
     private Invoker<StickyTest> invoker1 = mock(Invoker.class);
     private  Invoker<StickyTest> invoker2 = mock(Invoker.class);
     private RpcInvocation invocation;
     private Directory<StickyTest> dic;
     private Result result = new AppResponse();
-    private StickyClusterInvoker<StickyTest> clusterinvoker = null;
+    private StickyClusterInvoker<StickyTest> clusterinvoker;
     private URL url = URL.valueOf("test://test:11/test?"
                     + "&loadbalance=roundrobin"
                     + "&" + CLUSTER_STICKY_KEY + "=true"
@@ -79,7 +76,8 @@ public class StickyTest {
     public void testStickyNoCheck() {
         int count = testSticky("t1", false);
         System.out.println(count);
-        Assertions.assertTrue(count > 0 && count <= runs);
+        Assertions.assertTrue(count > 0);
+		Assertions.assertTrue(count <= runs);
     }
 
     @Test
@@ -92,7 +90,8 @@ public class StickyTest {
     public void testMethodStickyNoCheck() {
         int count = testSticky("method1", false);
         System.out.println(count);
-        Assertions.assertTrue(count > 0 && count <= runs);
+        Assertions.assertTrue(count > 0);
+		Assertions.assertTrue(count <= runs);
     }
 
     @Test
@@ -103,9 +102,11 @@ public class StickyTest {
 
     @Test
     public void testMethodsSticky() {
-        for (int i = 0; i < 100; i++) {//Two different methods should always use the same invoker every time.
-            int count1 = testSticky("method1", true);
-            int count2 = testSticky("method2", true);
+        int count1;
+		int count2;
+		for (int i = 0; i < 100; i++) {//Two different methods should always use the same invoker every time.
+            count1 = testSticky("method1", true);
+            count2 = testSticky("method2", true);
             Assertions.assertEquals(count1, count2);
         }
     }
@@ -139,7 +140,6 @@ public class StickyTest {
         return count;
     }
 
-
     static class StickyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         private Invoker<T> selectedInvoker;
 
@@ -153,7 +153,7 @@ public class StickyTest {
 
         @Override
         protected Result doInvoke(Invocation invocation, List<Invoker<T>> invokers,
-                                  LoadBalance loadbalance) throws RpcException {
+                                  LoadBalance loadbalance) {
             Invoker<T> invoker = select(loadbalance, invocation, invokers, null);
             selectedInvoker = invoker;
             return null;

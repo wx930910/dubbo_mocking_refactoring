@@ -88,22 +88,42 @@ public class ChanelHandlerTestWithMock {
 			this.url = url;
 			this.instance = Mockito.mock(ExchangeHandlerAdapter.class,
 					Mockito.CALLS_REAL_METHODS);
+			mockConnect();
+			mockDisconnected();
+			mockCaught();
+		}
+
+		private void mockConnect() {
 			try {
 				Mockito.doAnswer(invocation -> {
 					Channel channel = invocation.getArgument(0);
 					System.out.println("connected event,chanel;" + channel);
 					return null;
 				}).when(this.instance).connected(Mockito.any(Channel.class));
+			} catch (RemotingException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void mockDisconnected() {
+			try {
 				Mockito.doAnswer(invocation -> {
 					Channel channel = invocation.getArgument(0);
 					System.out.println("disconnected event,chanel;" + channel);
 					initClient(url);
 					return null;
 				}).when(this.instance).disconnected(Mockito.any(Channel.class));
+			} catch (RemotingException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void mockCaught() {
+			try {
 				Mockito.doNothing().when(this.instance).caught(
 						Mockito.any(Channel.class),
 						Mockito.any(Throwable.class));
-			} catch (Exception e) {
+			} catch (RemotingException e) {
 				e.printStackTrace();
 			}
 		}
