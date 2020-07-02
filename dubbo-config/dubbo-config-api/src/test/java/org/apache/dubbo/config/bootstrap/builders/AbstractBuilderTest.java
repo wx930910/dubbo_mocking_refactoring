@@ -111,28 +111,32 @@ class AbstractBuilderTest {
 		public AbstractBuilder<AbstractConfig, AbstractBuilder> MockedBuilder;
 
 		public MockBuilder() {
-			this.MockedBuilder = Mockito.mock(AbstractBuilder.class, Mockito.CALLS_REAL_METHODS);
+			this.MockedBuilder = Mockito.mock(AbstractBuilder.class,
+					Mockito.CALLS_REAL_METHODS);
 			mockBuild();
 			mockGetThis();
 		}
 
 		private void mockBuild() {
 			Mockito.when(this.MockedBuilder.build()).thenAnswer(invocation -> {
-				AbstractConfig parameterConfig = new MockConfig().MockedConfig;
+				AbstractConfig parameterConfig = Mockito
+						.spy(AbstractConfig.class);
 				this.MockedBuilder.build(parameterConfig);
 				return parameterConfig;
 			});
 		}
 
 		protected void mockGetThis() {
-			Mockito.when(this.MockedBuilder.getThis()).thenReturn(this.MockedBuilder);
+			Mockito.when(this.MockedBuilder.getThis())
+					.thenReturn(this.MockedBuilder);
 		}
 
 	}
 
-	private static class Builder extends AbstractBuilder<AbstractConfig, Builder> {
+	private static class Builder
+			extends AbstractBuilder<AbstractConfig, Builder> {
 		public AbstractConfig build() {
-			AbstractConfig parameterConfig = new MockConfig().MockedConfig;
+			AbstractConfig parameterConfig = Mockito.spy(AbstractConfig.class);
 			super.build(parameterConfig);
 
 			return parameterConfig;
@@ -142,19 +146,6 @@ class AbstractBuilderTest {
 		protected Builder getThis() {
 			return this;
 		}
-	}
-
-	private static class MockConfig {
-		public AbstractConfig MockedConfig;
-
-		public MockConfig() {
-			initalizeMockedClass();
-		}
-
-		private void initalizeMockedClass() {
-			this.MockedConfig = Mockito.mock(AbstractConfig.class, Mockito.CALLS_REAL_METHODS);
-		}
-
 	}
 
 }
