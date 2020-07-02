@@ -29,6 +29,7 @@ class AbstractBuilderTest {
 	@Test
 	void id() {
 		AbstractBuilder builder = new MockBuilder().MockedBuilder;
+		Mockito.doCallRealMethod().when(builder).id(Mockito.anyString());
 		builder.id("id");
 		Assertions.assertEquals("id", builder.build().getId());
 	}
@@ -36,6 +37,7 @@ class AbstractBuilderTest {
 	@Test
 	void prefix() {
 		AbstractBuilder builder = new MockBuilder().MockedBuilder;
+		Mockito.doCallRealMethod().when(builder).prefix(Mockito.anyString());
 		builder.prefix("prefix");
 		Assertions.assertEquals("prefix", builder.build().getPrefix());
 	}
@@ -95,6 +97,8 @@ class AbstractBuilderTest {
 	@Test
 	void build() {
 		AbstractBuilder builder = new MockBuilder().MockedBuilder;
+		Mockito.doCallRealMethod().when(builder).id(Mockito.anyString());
+		Mockito.doCallRealMethod().when(builder).prefix(Mockito.anyString());
 		builder.id("id");
 		builder.prefix("prefix");
 
@@ -112,7 +116,12 @@ class AbstractBuilderTest {
 
 		public MockBuilder() {
 			this.MockedBuilder = Mockito.mock(AbstractBuilder.class,
-					Mockito.CALLS_REAL_METHODS);
+					Mockito.withSettings().verboseLogging());
+			Mockito.doAnswer(invocation -> {
+				invocation.callRealMethod();
+				return null;
+			}).when(this.MockedBuilder)
+					.build(Mockito.any(AbstractConfig.class));
 			mockBuild();
 			mockGetThis();
 		}
@@ -131,21 +140,6 @@ class AbstractBuilderTest {
 					.thenReturn(this.MockedBuilder);
 		}
 
-	}
-
-	private static class Builder
-			extends AbstractBuilder<AbstractConfig, Builder> {
-		public AbstractConfig build() {
-			AbstractConfig parameterConfig = Mockito.spy(AbstractConfig.class);
-			super.build(parameterConfig);
-
-			return parameterConfig;
-		}
-
-		@Override
-		protected Builder getThis() {
-			return this;
-		}
 	}
 
 }
