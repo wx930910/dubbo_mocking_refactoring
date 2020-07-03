@@ -59,8 +59,7 @@ public class RouterTest {
 		public Router instance;
 
 		public MockCompatibleRouter() {
-			this.instance = Mockito.mock(Router.class, Mockito.withSettings()
-					.defaultAnswer(Mockito.CALLS_REAL_METHODS));
+			this.instance = Mockito.mock(Router.class);
 			Mockito.doReturn(null).when(this.instance).getUrl();
 			Mockito.doReturn(null).when(this.instance).route(Mockito.anyList(),
 					Mockito.any(URL.class), Mockito.any(Invocation.class));
