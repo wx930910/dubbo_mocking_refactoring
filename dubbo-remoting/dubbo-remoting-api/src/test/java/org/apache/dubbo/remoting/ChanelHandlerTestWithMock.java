@@ -86,8 +86,7 @@ public class ChanelHandlerTestWithMock {
 
 		public MockPeformanceTestHandler(String url) {
 			this.url = url;
-			this.instance = Mockito.mock(ExchangeHandlerAdapter.class,
-					Mockito.CALLS_REAL_METHODS);
+			this.instance = Mockito.mock(ExchangeHandlerAdapter.class);
 			mockConnect();
 			mockDisconnected();
 			mockCaught();
