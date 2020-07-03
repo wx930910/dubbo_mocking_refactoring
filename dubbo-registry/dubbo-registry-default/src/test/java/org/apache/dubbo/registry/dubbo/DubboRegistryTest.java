@@ -115,9 +115,7 @@ public class DubboRegistryTest {
 
 		public MockMockDubboRegistryByXiao(URL url) {
 			this.instance = Mockito.mock(FailbackRegistry.class,
-					Mockito.withSettings()
-							.defaultAnswer(Mockito.CALLS_REAL_METHODS)
-							.useConstructor(url));
+					Mockito.withSettings().useConstructor(url));
 			initalizeMockingInstance();
 		}
 
