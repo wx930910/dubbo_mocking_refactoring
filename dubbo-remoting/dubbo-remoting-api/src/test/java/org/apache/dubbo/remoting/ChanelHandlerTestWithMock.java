@@ -46,6 +46,12 @@ public class ChanelHandlerTestWithMock {
 				run = false;
 			}
 		}
+		try {
+			Mockito.verify(handler.instance, Mockito.atLeastOnce())
+					.connected(Mockito.any(Channel.class));
+		} catch (RemotingException e) {
+			e.printStackTrace();
+		}
 		return exchangeClient;
 	}
 
@@ -78,6 +84,7 @@ public class ChanelHandlerTestWithMock {
 		ExchangeClient exchangeClient = initClient(url);
 		Thread.sleep(sleep);
 		closeClient(exchangeClient);
+
 	}
 
 	static class MockPeformanceTestHandler {

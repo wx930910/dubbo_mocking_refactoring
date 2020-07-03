@@ -85,12 +85,14 @@ public class ClientReconnectTest {
 		public ExchangeHandlerAdapter instance;
 
 		public MockHandlerAdapter() {
-			this.instance = Mockito.mock(ExchangeHandlerAdapter.class, Mockito
-					.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+			this.instance = Mockito.mock(ExchangeHandlerAdapter.class);
 			try {
-				Mockito.doAnswer(invocation -> null).when(this.instance).connected(Mockito.any(Channel.class));
-				Mockito.doAnswer(invocation -> null).when(this.instance).disconnected(Mockito.any(Channel.class));
-				Mockito.doAnswer(invocation -> null).when(this.instance).caught(Mockito.any(Channel.class),
+				Mockito.doAnswer(invocation -> null).when(this.instance)
+						.connected(Mockito.any(Channel.class));
+				Mockito.doAnswer(invocation -> null).when(this.instance)
+						.disconnected(Mockito.any(Channel.class));
+				Mockito.doAnswer(invocation -> null).when(this.instance).caught(
+						Mockito.any(Channel.class),
 						Mockito.any(Throwable.class));
 			} catch (RemotingException e) {
 				e.printStackTrace();
@@ -112,6 +114,5 @@ public class ClientReconnectTest {
 				throws RemotingException {
 		}
 	}
-
 
 }
