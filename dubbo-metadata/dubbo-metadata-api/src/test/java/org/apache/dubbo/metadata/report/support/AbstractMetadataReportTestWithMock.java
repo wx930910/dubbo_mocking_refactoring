@@ -37,6 +37,10 @@ public class AbstractMetadataReportTestWithMock {
 
 	@Test
 	public void testGetProtocol() {
+		// Call real methods of mocking instance
+		Mockito.doCallRealMethod().when(abstractMetadataReport.mockingInstance)
+				.getProtocol(Mockito.any(URL.class));
+
 		URL url = URL.valueOf("dubbo://"
 				+ NetUtils.getLocalAddress().getHostName()
 				+ ":4444/org.apache.dubbo.TestService?version=1.0.0&application=vic&side=provider");
@@ -194,6 +198,11 @@ public class AbstractMetadataReportTestWithMock {
 			AbstractMetadataReport abstractMetadataReport, String interfaceName,
 			String version, String group, String application)
 			throws ClassNotFoundException {
+		// Call real methods of mocking instance
+		Mockito.doCallRealMethod().when(abstractMetadataReport)
+				.storeProviderMetadata(Mockito.any(MetadataIdentifier.class),
+						Mockito.any(FullServiceDefinition.class));
+
 		URL url = URL.valueOf("xxx://"
 				+ NetUtils.getLocalAddress().getHostName() + ":4444/"
 				+ interfaceName + "?version=" + version + "&application="
@@ -216,16 +225,19 @@ public class AbstractMetadataReportTestWithMock {
 			AbstractMetadataReport abstractMetadataReport, String interfaceName,
 			String version, String group, String application,
 			Map<String, String> tmp) throws ClassNotFoundException {
+		// Call real methods of mocking instance
+		Mockito.doCallRealMethod().when(abstractMetadataReport)
+				.storeConsumerMetadata(Mockito.any(MetadataIdentifier.class),
+						Mockito.anyMap());
+
 		URL url = URL.valueOf("xxx://"
 				+ NetUtils.getLocalAddress().getHostName() + ":4444/"
 				+ interfaceName + "?version=" + version + "&application="
 				+ application + (group == null ? "" : "&group=" + group)
 				+ "&testPKey=9090");
-
 		tmp.putAll(url.getParameters());
 		MetadataIdentifier consumerMetadataIdentifier = new MetadataIdentifier(
 				interfaceName, version, group, CONSUMER_SIDE, application);
-
 		abstractMetadataReport.storeConsumerMetadata(consumerMetadataIdentifier,
 				tmp);
 
@@ -235,6 +247,13 @@ public class AbstractMetadataReportTestWithMock {
 	@Test
 	public void testPublishAll()
 			throws ClassNotFoundException, InterruptedException {
+		// Call real methods of mocking instance
+		Mockito.doCallRealMethod().when(abstractMetadataReport.mockingInstance)
+				.storeConsumerMetadataTask(
+						Mockito.any(MetadataIdentifier.class),
+						Mockito.anyMap());
+		Mockito.doCallRealMethod().when(abstractMetadataReport.mockingInstance)
+				.publishAll();
 
 		Assertions.assertTrue(abstractMetadataReport.store.isEmpty());
 		Assertions.assertTrue(
@@ -323,6 +342,9 @@ public class AbstractMetadataReportTestWithMock {
 
 	@Test
 	public void testCalculateStartTime() {
+		AbstractMetadataReport instance = abstractMetadataReport.mockingInstance;
+		// Call real methods of mocking instance
+		Mockito.doCallRealMethod().when(instance).calculateStartTime();
 		for (int i = 0; i < 300; i++) {
 			long t = abstractMetadataReport.mockingInstance.calculateStartTime()
 					+ System.currentTimeMillis();
@@ -378,8 +400,7 @@ public class AbstractMetadataReportTestWithMock {
 
 		private void initMockingInstance(URL metadataReportURL) {
 			this.mockingInstance = Mockito.mock(AbstractMetadataReport.class,
-					Mockito.withSettings()
-							.defaultAnswer(Mockito.CALLS_REAL_METHODS)
+					Mockito.withSettings().verboseLogging()
 							.useConstructor(metadataReportURL));
 		}
 
