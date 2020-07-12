@@ -16,11 +16,11 @@
  */
 package org.apache.dubbo.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * {@link GenericEventListener} Test
@@ -29,49 +29,49 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class GenericEventListenerTest {
 
-    private EventDispatcher eventDispatcher;
+	private EventDispatcher eventDispatcher;
 
-    private MyGenericEventListener listener;
+	private MyGenericEventListener listener;
 
-    @BeforeEach
-    public void init() {
-        this.listener = new MyGenericEventListener();
-        this.eventDispatcher = EventDispatcher.getDefaultExtension();
-        this.eventDispatcher.addEventListener(listener);
-    }
+	@BeforeEach
+	public void init() {
+		this.listener = new MyGenericEventListener();
+		this.eventDispatcher = EventDispatcher.getDefaultExtension();
+		this.eventDispatcher.addEventListener(listener);
+	}
 
-    @AfterEach
-    public void destroy() {
-        this.eventDispatcher.removeAllEventListeners();
-    }
+	@AfterEach
+	public void destroy() {
+		this.eventDispatcher.removeAllEventListeners();
+	}
 
-    @Test
-    public void testOnEvent() {
-        String value = "Hello,World";
-        EchoEvent echoEvent = new EchoEvent(value);
-        eventDispatcher.dispatch(echoEvent);
-        assertEquals(echoEvent, listener.getEchoEvent());
-        assertEquals(value, listener.getEchoEvent().getSource());
-    }
+	@Test
+	public void testOnEvent() {
+		String value = "Hello,World";
+		EchoEvent echoEvent = new EchoEvent(value);
+		eventDispatcher.dispatch(echoEvent);
+		assertEquals(echoEvent, listener.getEchoEvent());
+		assertEquals(value, listener.getEchoEvent().getSource());
+	}
 
-    class MyGenericEventListener extends GenericEventListener {
+	class MyGenericEventListener extends GenericEventListener {
 
-        private EchoEvent echoEvent;
+		private EchoEvent echoEvent;
 
-        public void onEvent(EchoEvent echoEvent) {
-            this.echoEvent = echoEvent;
-        }
+		public void onEvent(EchoEvent echoEvent) {
+			this.echoEvent = echoEvent;
+		}
 
-        public void event(EchoEvent echoEvent) {
-            assertEquals("Hello,World", echoEvent.getSource());
-        }
+		public void event(EchoEvent echoEvent) {
+			assertEquals("Hello,World", echoEvent.getSource());
+		}
 
-        public void event(EchoEvent echoEvent, Object arg) {
-            this.echoEvent = echoEvent;
-        }
+		public void event(EchoEvent echoEvent, Object arg) {
+			this.echoEvent = echoEvent;
+		}
 
-        public EchoEvent getEchoEvent() {
-            return echoEvent;
-        }
-    }
+		public EchoEvent getEchoEvent() {
+			return echoEvent;
+		}
+	}
 }

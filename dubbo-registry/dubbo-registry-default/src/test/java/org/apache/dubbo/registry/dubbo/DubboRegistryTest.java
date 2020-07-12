@@ -163,16 +163,18 @@ public class DubboRegistryTest {
 			logger.info("Begin to register: " + url);
 			isAvailable = true;
 		}
+		
+		@Override
+		public void doSubscribe(URL url, NotifyListener listener) {
+			logger.info("Begin to subscribe: " + url);
+		}
+		
+		
 
 		@Override
 		public void doUnregister(URL url) {
 			logger.info("Begin to ungister: " + url);
 			isAvailable = false;
-		}
-
-		@Override
-		public void doSubscribe(URL url, NotifyListener listener) {
-			logger.info("Begin to subscribe: " + url);
 		}
 
 		@Override
@@ -184,6 +186,8 @@ public class DubboRegistryTest {
 		public boolean isAvailable() {
 			return isAvailable;
 		}
+		
+		
 	}
 
 	private int getNotifiedListeners() {

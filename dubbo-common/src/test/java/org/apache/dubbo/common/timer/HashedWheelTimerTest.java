@@ -17,56 +17,82 @@
 
 package org.apache.dubbo.common.timer;
 
-import org.apache.dubbo.common.utils.NamedThreadFactory;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.dubbo.common.utils.NamedThreadFactory;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 public class HashedWheelTimerTest {
 
-    private class PrintTask implements TimerTask {
+	private class PrintTask implements TimerTask {
 
-        @Override
-        public void run(Timeout timeout) {
-            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            System.out.println("task :" + LocalDateTime.now().format(formatter));
-        }
-    }
+		@Override
+		public void run(Timeout timeout) {
+			final DateTimeFormatter formatter = DateTimeFormatter
+					.ofPattern("yyyy-MM-dd HH:mm:ss");
+			System.out
+					.println("task :" + LocalDateTime.now().format(formatter));
+		}
+	}
 
-    @Test
-    public void newTimeout() throws InterruptedException {
-        final Timer timer = newTimer();
-        for (int i = 0; i < 10; i++) {
-            timer.newTimeout(new PrintTask(), 1, TimeUnit.SECONDS);
-            Thread.sleep(1000);
-        }
-        Thread.sleep(5000);
-    }
+	@Test
+	public void newTimeout() throws InterruptedException {
+		TimerTask instance = Mockito.mock(TimerTask.class);
+		try {
+			Mockito.doAnswer(invocation -> {
+				final DateTimeFormatter formatter = DateTimeFormatter
+						.ofPattern("yyyy-MM-dd HH:mm:ss");
+				System.out.println(
+						"task :" + LocalDateTime.now().format(formatter));
+				return null;
+			}).when(instance).run(Mockito.any(Timeout.class));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		final Timer timer = newTimer();
+		for (int i = 0; i < 10; i++) {
+			timer.newTimeout(instance, 1, TimeUnit.SECONDS);
+			Thread.sleep(1000);
+		}
+		Thread.sleep(5000);
+	}
 
-    @Test
-    public void stop() throws InterruptedException {
-        final Timer timer = newTimer();
-        for (int i = 0; i < 10; i++) {
-            timer.newTimeout(new PrintTask(), 5, TimeUnit.SECONDS);
-            Thread.sleep(100);
-        }
-        //stop timer
-        timer.stop();
+	@Test
+	public void stop() throws InterruptedException {
+		TimerTask instance = Mockito.mock(TimerTask.class);
+		try {
+			Mockito.doAnswer(invocation -> {
+				final DateTimeFormatter formatter = DateTimeFormatter
+						.ofPattern("yyyy-MM-dd HH:mm:ss");
+				System.out.println(
+						"task :" + LocalDateTime.now().format(formatter));
+				return null;
+			}).when(instance).run(Mockito.any(Timeout.class));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		final Timer timer = newTimer();
+		for (int i = 0; i < 10; i++) {
+			timer.newTimeout(instance, 5, TimeUnit.SECONDS);
+			Thread.sleep(100);
+		}
+		// stop timer
+		timer.stop();
 
-        try {
-            //this will throw a exception
-            timer.newTimeout(new PrintTask(), 5, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		try {
+			// this will throw a exception
+			timer.newTimeout(new PrintTask(), 5, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    private Timer newTimer() {
-        return new HashedWheelTimer(
-                new NamedThreadFactory("dubbo-future-timeout", true),
-                100,
-                TimeUnit.MILLISECONDS);
-    }
+	private Timer newTimer() {
+		return new HashedWheelTimer(
+				new NamedThreadFactory("dubbo-future-timeout", true), 100,
+				TimeUnit.MILLISECONDS);
+	}
 }
