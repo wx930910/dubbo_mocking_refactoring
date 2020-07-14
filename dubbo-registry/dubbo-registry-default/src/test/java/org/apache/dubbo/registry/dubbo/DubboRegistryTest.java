@@ -121,29 +121,13 @@ public class DubboRegistryTest {
 
 		private void initalizeMockingInstance() {
 			Mockito.doAnswer(invocation -> {
-				URL url = invocation.getArgument(0);
-				logger.info("Begin to register: " + url);
 				isAvailable = true;
 				return null;
 			}).when(this.instance).doRegister(Mockito.any(URL.class));
 			Mockito.doAnswer(invocation -> {
-				URL url = invocation.getArgument(0);
-				logger.info("Begin to ungister: " + url);
 				isAvailable = false;
 				return null;
 			}).when(this.instance).doUnregister(Mockito.any(URL.class));
-			Mockito.doAnswer(invocation -> {
-				URL url = invocation.getArgument(0);
-				logger.info("Begin to subscribe: " + url);
-				return null;
-			}).when(this.instance).doSubscribe(Mockito.any(URL.class),
-					Mockito.any(NotifyListener.class));
-			Mockito.doAnswer(invocation -> {
-				URL url = invocation.getArgument(0);
-				logger.info("Begin to unSubscribe: " + url);
-				return null;
-			}).when(this.instance).doUnsubscribe(Mockito.any(URL.class),
-					Mockito.any(NotifyListener.class));
 			Mockito.doReturn(this.isAvailable).when(this.instance)
 					.isAvailable();
 		}
@@ -163,13 +147,11 @@ public class DubboRegistryTest {
 			logger.info("Begin to register: " + url);
 			isAvailable = true;
 		}
-		
+
 		@Override
 		public void doSubscribe(URL url, NotifyListener listener) {
 			logger.info("Begin to subscribe: " + url);
 		}
-		
-		
 
 		@Override
 		public void doUnregister(URL url) {
@@ -186,8 +168,7 @@ public class DubboRegistryTest {
 		public boolean isAvailable() {
 			return isAvailable;
 		}
-		
-		
+
 	}
 
 	private int getNotifiedListeners() {
