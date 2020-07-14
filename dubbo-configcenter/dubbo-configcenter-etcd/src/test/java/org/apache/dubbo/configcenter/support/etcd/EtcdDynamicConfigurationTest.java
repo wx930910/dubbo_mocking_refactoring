@@ -35,6 +35,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -71,14 +72,14 @@ public class EtcdDynamicConfigurationTest {
 	@Test
 	public void testAddListener() throws Exception {
 		CountDownLatch latch = new CountDownLatch(4);
-		TestListener listener1 = new TestListener(latch);
-		TestListener listener2 = new TestListener(latch);
-		TestListener listener3 = new TestListener(latch);
-		TestListener listener4 = new TestListener(latch);
-		config.addListener("AService.configurators", listener1);
-		config.addListener("AService.configurators", listener2);
-		config.addListener("testapp.tagrouters", listener3);
-		config.addListener("testapp.tagrouters", listener4);
+		MockTestListener listener1 = new MockTestListener(latch);
+		MockTestListener listener2 = new MockTestListener(latch);
+		MockTestListener listener3 = new MockTestListener(latch);
+		MockTestListener listener4 = new MockTestListener(latch);
+		config.addListener("AService.configurators", listener1.instance);
+		config.addListener("AService.configurators", listener2.instance);
+		config.addListener("testapp.tagrouters", listener3.instance);
+		config.addListener("testapp.tagrouters", listener4.instance);
 
 		put("/dubbo/config/AService/configurators", "new value1");
 		Thread.sleep(200);
@@ -102,6 +103,37 @@ public class EtcdDynamicConfigurationTest {
 		Assert.assertEquals("new value1", listener2.getValue());
 		Assert.assertEquals("new value2", listener3.getValue());
 		Assert.assertEquals("new value2", listener4.getValue());
+	}
+
+	private class MockTestListener {
+		public ConfigurationListener instance;
+
+		private CountDownLatch latch;
+		private String value;
+		private Map<String, Integer> countMap = new HashMap<>();
+
+		public MockTestListener(CountDownLatch latch) {
+			this.instance = Mockito.mock(ConfigurationListener.class);
+			this.latch = latch;
+			Mockito.doAnswer(invocation -> {
+				ConfigChangedEvent event = invocation.getArgument(0);
+				Integer count = countMap.computeIfAbsent(event.getKey(),
+						k -> 0);
+				countMap.put(event.getKey(), ++count);
+				value = event.getContent();
+				latch.countDown();
+				return null;
+			}).when(this.instance)
+					.process(Mockito.any(ConfigChangedEvent.class));
+		}
+
+		public int getCount(String key) {
+			return countMap.get(key);
+		}
+
+		public String getValue() {
+			return value;
+		}
 	}
 
 	private class TestListener implements ConfigurationListener {
