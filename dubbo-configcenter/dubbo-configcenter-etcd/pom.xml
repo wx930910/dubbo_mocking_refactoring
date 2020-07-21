@@ -55,7 +55,13 @@
             <artifactId>testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-simple</artifactId>
+		    <version>1.7.25</version>
+		    <scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-common</artifactId>
