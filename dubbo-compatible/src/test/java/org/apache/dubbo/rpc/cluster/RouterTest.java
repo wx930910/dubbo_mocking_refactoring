@@ -37,12 +37,18 @@ public class RouterTest {
 
 	@BeforeAll
 	public static void setUp() {
-		Router compatibleRouter = new MockCompatibleRouter().instance;
-		routers.add(compatibleRouter);
-		Router compatibleRouter2 = new MockCompatibleRouter().instance;
-		routers.add(compatibleRouter2);
-		NewRouter newRouter = new NewRouter();
-		routers.add(newRouter);
+		Router router1 = Mockito.mock(Router.class);
+		Mockito.when(router1.compareTo(Mockito.any(Router.class)))
+				.thenReturn(0);
+		Router router2 = Mockito.mock(Router.class);
+		Mockito.when(router2.compareTo(Mockito.any(Router.class)))
+				.thenReturn(0);
+		Router router3 = Mockito.mock(Router.class);
+		Mockito.when(router3.compareTo(Mockito.any(Router.class)))
+				.thenReturn(0);
+		routers.add(router1);
+		routers.add(router2);
+		routers.add(router3);
 	}
 
 	@Test
@@ -60,11 +66,13 @@ public class RouterTest {
 
 		public MockCompatibleRouter() {
 			this.instance = Mockito.mock(Router.class);
+			Mockito.when(this.instance.getUrl()).thenReturn(null);
 			Mockito.doReturn(null).when(this.instance).getUrl();
-			Mockito.doReturn(null).when(this.instance).route(Mockito.anyList(),
-					Mockito.any(URL.class), Mockito.any(Invocation.class));
-			Mockito.doReturn(0).when(this.instance)
-					.compareTo(Mockito.any(Router.class));
+			Mockito.when(this.instance.route(Mockito.anyList(),
+					Mockito.any(URL.class), Mockito.any(Invocation.class)))
+					.thenReturn(null);
+			Mockito.when(this.instance.compareTo(Mockito.any(Router.class)))
+					.thenReturn(0);
 		}
 
 	}
