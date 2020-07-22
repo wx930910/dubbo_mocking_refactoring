@@ -9,15 +9,18 @@ import org.apache.dubbo.remoting.exchange.ExchangeClient;
 import org.apache.dubbo.remoting.exchange.Exchangers;
 import org.apache.dubbo.remoting.exchange.support.ExchangeHandlerAdapter;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class ChanelHandlerTestWithMock2 {
-	private static final Logger logger = LoggerFactory
-			.getLogger(ChanelHandlerTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ChanelHandlerTest.class);
 
 	public static ExchangeClient initClient(String url) {
 		// Create client and build connection
 		ExchangeClient exchangeClient = null;
-		PeformanceTestHandler handler = new PeformanceTestHandler(url);
+		// Spy abstract class
+		ExchangeHandlerAdapter handler = Mockito.mock(ExchangeHandlerAdapter.class, Mockito.CALLS_REAL_METHODS);
+
+		// PeformanceTestHandler handler = new PeformanceTestHandler(url);
 		boolean run = true;
 		while (run) {
 			try {
@@ -25,12 +28,9 @@ public class ChanelHandlerTestWithMock2 {
 				exchangeClient = Exchangers.connect(url, handler);
 			} catch (Throwable t) {
 
-				if (t != null && t.getCause() != null
-						&& t.getCause().getClass() != null
-						&& (t.getCause()
-								.getClass() == java.net.ConnectException.class
-								|| t.getCause()
-										.getClass() == java.net.ConnectException.class)) {
+				if (t != null && t.getCause() != null && t.getCause().getClass() != null
+						&& (t.getCause().getClass() == java.net.ConnectException.class
+								|| t.getCause().getClass() == java.net.ConnectException.class)) {
 
 				} else {
 					t.printStackTrace();
@@ -46,12 +46,25 @@ public class ChanelHandlerTestWithMock2 {
 				run = false;
 			}
 		}
+		// Verify that connected was invoked and disconnected was not invoked.
+		try {
+			Mockito.verify(handler, Mockito.atLeastOnce()).connected(Mockito.any(Channel.class));
+			Mockito.verify(handler, Mockito.never()).disconnected(Mockito.any(Channel.class));
+		} catch (RemotingException e) {
+			e.printStackTrace();
+		}
 		return exchangeClient;
 	}
 
 	public static void closeClient(ExchangeClient client) {
 		if (client.isConnected()) {
 			client.close();
+		}
+		// Verify disconnected was invoked at least once.
+		try {
+			Mockito.verify(client.getExchangeHandler(), Mockito.atLeastOnce()).disconnected(Mockito.any(Channel.class));
+		} catch (RemotingException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -63,18 +76,15 @@ public class ChanelHandlerTestWithMock2 {
 			return;
 		}
 		final String server = System.getProperty("server", "127.0.0.1:9911");
-		final String transporter = PerformanceUtils.getProperty(
-				Constants.TRANSPORTER_KEY, Constants.DEFAULT_TRANSPORTER);
-		final String serialization = PerformanceUtils.getProperty(
-				Constants.SERIALIZATION_KEY,
+		final String transporter = PerformanceUtils.getProperty(Constants.TRANSPORTER_KEY,
+				Constants.DEFAULT_TRANSPORTER);
+		final String serialization = PerformanceUtils.getProperty(Constants.SERIALIZATION_KEY,
 				Constants.DEFAULT_REMOTING_SERIALIZATION);
-		final int timeout = PerformanceUtils.getIntProperty(TIMEOUT_KEY,
-				DEFAULT_TIMEOUT);
+		final int timeout = PerformanceUtils.getIntProperty(TIMEOUT_KEY, DEFAULT_TIMEOUT);
 		int sleep = PerformanceUtils.getIntProperty("sleep", 60 * 1000 * 60);
 
-		final String url = "exchange://" + server + "?transporter="
-				+ transporter + "&serialization=" + serialization + "&timeout="
-				+ timeout;
+		final String url = "exchange://" + server + "?transporter=" + transporter + "&serialization=" + serialization
+				+ "&timeout=" + timeout;
 
 		ExchangeClient exchangeClient = initClient(url);
 
@@ -111,8 +121,7 @@ public class ChanelHandlerTestWithMock2 {
 		 * caught(org.apache.dubbo.remoting.Channel, java.lang.Throwable)
 		 */
 		@Override
-		public void caught(Channel channel, Throwable exception)
-				throws RemotingException {
+		public void caught(Channel channel, Throwable exception) throws RemotingException {
 			// System.out.println("caught event:"+exception);
 		}
 
