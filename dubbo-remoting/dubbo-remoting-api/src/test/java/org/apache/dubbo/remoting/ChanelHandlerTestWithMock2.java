@@ -68,6 +68,12 @@ public class ChanelHandlerTestWithMock2 {
 		}
 	}
 
+	/**
+	 * Test #Exchangers#connect() method, to make sure it do not call
+	 * disconnected method.
+	 * 
+	 * @throws Throwable
+	 */
 	@Test
 	public void testClient() throws Throwable {
 		// read server info from property
