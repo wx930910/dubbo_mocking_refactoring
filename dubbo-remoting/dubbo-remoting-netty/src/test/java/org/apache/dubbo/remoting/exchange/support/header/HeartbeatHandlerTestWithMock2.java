@@ -89,9 +89,10 @@ public class HeartbeatHandlerTestWithMock2 {
 	}
 
 	/**
-	 * Test target is #Exchangers#connect() It is not unit test since it
-	 * involved #URL, #FakeChannelHandlers, #Exchangers 3 different test class
-	 * interaction.
+	 * Test target is #Exchangers#connect() It is unit test since it only focus
+	 * on testing #Exchangers class interaction. But mean time it has too many
+	 * interactions between production files. (FakeChannelHandlers,
+	 * ExchangeServer, ExchangeClient)
 	 * 
 	 * @throws Exception
 	 */
