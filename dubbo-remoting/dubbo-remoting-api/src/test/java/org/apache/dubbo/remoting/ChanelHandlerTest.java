@@ -33,8 +33,7 @@ import org.junit.jupiter.api.Test;
  */
 public class ChanelHandlerTest {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(ChanelHandlerTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ChanelHandlerTest.class);
 
 	public static ExchangeClient initClient(String url) {
 		// Create client and build connection
@@ -46,12 +45,9 @@ public class ChanelHandlerTest {
 				exchangeClient = Exchangers.connect(url, handler);
 			} catch (Throwable t) {
 
-				if (t != null && t.getCause() != null
-						&& t.getCause().getClass() != null
-						&& (t.getCause()
-								.getClass() == java.net.ConnectException.class
-								|| t.getCause()
-										.getClass() == java.net.ConnectException.class)) {
+				if (t != null && t.getCause() != null && t.getCause().getClass() != null
+						&& (t.getCause().getClass() == java.net.ConnectException.class
+								|| t.getCause().getClass() == java.net.ConnectException.class)) {
 
 				} else {
 					t.printStackTrace();
@@ -76,6 +72,12 @@ public class ChanelHandlerTest {
 		}
 	}
 
+	/**
+	 * Test #Exchangers#connect() method, to make sure it do not call
+	 * disconnected method.
+	 * 
+	 * @throws Throwable
+	 */
 	@Test
 	public void testClient() throws Throwable {
 		// read server info from property
@@ -84,18 +86,15 @@ public class ChanelHandlerTest {
 			return;
 		}
 		final String server = System.getProperty("server", "127.0.0.1:9911");
-		final String transporter = PerformanceUtils.getProperty(
-				Constants.TRANSPORTER_KEY, Constants.DEFAULT_TRANSPORTER);
-		final String serialization = PerformanceUtils.getProperty(
-				Constants.SERIALIZATION_KEY,
+		final String transporter = PerformanceUtils.getProperty(Constants.TRANSPORTER_KEY,
+				Constants.DEFAULT_TRANSPORTER);
+		final String serialization = PerformanceUtils.getProperty(Constants.SERIALIZATION_KEY,
 				Constants.DEFAULT_REMOTING_SERIALIZATION);
-		final int timeout = PerformanceUtils.getIntProperty(TIMEOUT_KEY,
-				DEFAULT_TIMEOUT);
+		final int timeout = PerformanceUtils.getIntProperty(TIMEOUT_KEY, DEFAULT_TIMEOUT);
 		int sleep = PerformanceUtils.getIntProperty("sleep", 60 * 1000 * 60);
 
-		final String url = "exchange://" + server + "?transporter="
-				+ transporter + "&serialization=" + serialization + "&timeout="
-				+ timeout;
+		final String url = "exchange://" + server + "?transporter=" + transporter + "&serialization=" + serialization
+				+ "&timeout=" + timeout;
 		ExchangeClient exchangeClient = initClient(url);
 		Thread.sleep(sleep);
 		closeClient(exchangeClient);
@@ -130,8 +129,7 @@ public class ChanelHandlerTest {
 		 * caught(org.apache.dubbo.remoting.Channel, java.lang.Throwable)
 		 */
 		@Override
-		public void caught(Channel channel, Throwable exception)
-				throws RemotingException {
+		public void caught(Channel channel, Throwable exception) throws RemotingException {
 			// System.out.println("caught event:"+exception);
 		}
 

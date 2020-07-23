@@ -68,23 +68,45 @@ public class EtcdDynamicConfigurationTestWithMock {
 		}
 	}
 
+	/**
+	 * Test Logic defined in {@link #EtcdDynamicConfiguration#onNext()}. It will
+	 * invoke overridden process()
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testAddListener() throws Exception {
 		CountDownLatch latch = new CountDownLatch(4);
 		// Mock interface
 		ConfigurationListener listener1 = Mockito.mock(ConfigurationListener.class);
+		Mockito.doAnswer(invocation -> {
+			latch.countDown();
+			return null;
+		}).when(listener1).process(Mockito.any(ConfigChangedEvent.class));
 		// Capture argument for further assertion
 		ArgumentCaptor<ConfigChangedEvent> event1 = ArgumentCaptor.forClass(ConfigChangedEvent.class);
 		// Mock interface
 		ConfigurationListener listener2 = Mockito.mock(ConfigurationListener.class);
+		Mockito.doAnswer(invocation -> {
+			latch.countDown();
+			return null;
+		}).when(listener2).process(Mockito.any(ConfigChangedEvent.class));
 		// Capture argument for further assertion
 		ArgumentCaptor<ConfigChangedEvent> event2 = ArgumentCaptor.forClass(ConfigChangedEvent.class);
 		// Mock interface
 		ConfigurationListener listener3 = Mockito.mock(ConfigurationListener.class);
+		Mockito.doAnswer(invocation -> {
+			latch.countDown();
+			return null;
+		}).when(listener3).process(Mockito.any(ConfigChangedEvent.class));
 		// Capture argument for further assertion
 		ArgumentCaptor<ConfigChangedEvent> event3 = ArgumentCaptor.forClass(ConfigChangedEvent.class);
 		// Mock interface
 		ConfigurationListener listener4 = Mockito.mock(ConfigurationListener.class);
+		Mockito.doAnswer(invocation -> {
+			latch.countDown();
+			return null;
+		}).when(listener4).process(Mockito.any(ConfigChangedEvent.class));
 		// Capture argument for further assertion
 		ArgumentCaptor<ConfigChangedEvent> event4 = ArgumentCaptor.forClass(ConfigChangedEvent.class);
 		// TestListener listener1 = new TestListener(latch);
@@ -92,14 +114,9 @@ public class EtcdDynamicConfigurationTestWithMock {
 		// TestListener listener3 = new TestListener(latch);
 		// TestListener listener4 = new TestListener(latch);
 		config.addListener("AService.configurators", listener1);
-		// Countdown latch just like overridden process
-		latch.countDown();
 		config.addListener("AService.configurators", listener2);
-		latch.countDown();
 		config.addListener("testapp.tagrouters", listener3);
-		latch.countDown();
 		config.addListener("testapp.tagrouters", listener4);
-		latch.countDown();
 
 		put("/dubbo/config/AService/configurators", "new value1");
 		Thread.sleep(200);

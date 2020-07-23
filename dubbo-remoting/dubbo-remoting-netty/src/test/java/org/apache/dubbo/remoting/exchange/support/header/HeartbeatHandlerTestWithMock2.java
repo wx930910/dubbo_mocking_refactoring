@@ -19,8 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class HeartbeatHandlerTestWithMock2 {
-	private static final Logger logger = LoggerFactory
-			.getLogger(HeartbeatHandlerTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(HeartbeatHandlerTest.class);
 
 	private ExchangeServer server;
 	private ExchangeClient client;
@@ -43,8 +42,7 @@ public class HeartbeatHandlerTestWithMock2 {
 
 	@Test
 	public void testServerHeartbeat() throws Exception {
-		URL serverURL = URL
-				.valueOf("header://localhost:55555?transporter=netty3");
+		URL serverURL = URL.valueOf("header://localhost:55555?transporter=netty3");
 		serverURL = serverURL.addParameter(Constants.HEARTBEAT_KEY, 1000);
 		// Mock interface
 		ExchangeHandler handler = Mockito.mock(ExchangeHandler.class);
@@ -63,16 +61,14 @@ public class HeartbeatHandlerTestWithMock2 {
 		client = Exchangers.connect(serverURL);
 		Thread.sleep(10000);
 		// Verify disconnect been invoked only once.
-		Mockito.verify(handler, Mockito.times(1))
-				.disconnected(Mockito.any(Channel.class));
+		Mockito.verify(handler, Mockito.times(1)).disconnected(Mockito.any(Channel.class));
 		// Assertions.assertTrue(handler.disconnectCount > 0);
 		System.out.println("disconnect count " + 1);
 	}
 
 	@Test
 	public void testHeartbeat() throws Exception {
-		URL serverURL = URL
-				.valueOf("header://localhost:55556?transporter=netty3");
+		URL serverURL = URL.valueOf("header://localhost:55556?transporter=netty3");
 		serverURL = serverURL.addParameter(Constants.HEARTBEAT_KEY, 1000);
 		// Mock interface
 		ExchangeHandler handler = Mockito.mock(ExchangeHandler.class);
@@ -86,19 +82,23 @@ public class HeartbeatHandlerTestWithMock2 {
 		// System.err.println(
 		// "++++++++++++++ connect count " + handler.connectCount);
 		// Verify haven't invoke disconnected and invoked connected once.
-		Mockito.verify(handler, Mockito.never())
-				.disconnected(Mockito.any(Channel.class));
-		Mockito.verify(handler, Mockito.times(1))
-				.connected(Mockito.any(Channel.class));
+		Mockito.verify(handler, Mockito.never()).disconnected(Mockito.any(Channel.class));
+		Mockito.verify(handler, Mockito.times(1)).connected(Mockito.any(Channel.class));
 		// Assertions.assertEquals(0, handler.disconnectCount);
 		// Assertions.assertEquals(1, handler.connectCount);
 	}
 
+	/**
+	 * Test target is #Exchangers#connect() It is not unit test since it
+	 * involved #URL, #FakeChannelHandlers, #Exchangers 3 different test class
+	 * interaction.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testClientHeartbeat() throws Exception {
 		FakeChannelHandlers.setTestingChannelHandlers();
-		URL serverURL = URL
-				.valueOf("header://localhost:55557?transporter=netty3");
+		URL serverURL = URL.valueOf("header://localhost:55557?transporter=netty3");
 		// Mock interface
 		ExchangeHandler handler = Mockito.mock(ExchangeHandler.class);
 		server = Exchangers.bind(serverURL, handler);
@@ -109,8 +109,7 @@ public class HeartbeatHandlerTestWithMock2 {
 		client = Exchangers.connect(serverURL);
 		Thread.sleep(10000);
 		// Verify disconnect been invoked only once.
-		Mockito.verify(handler, Mockito.times(1))
-				.connected(Mockito.any(Channel.class));
+		Mockito.verify(handler, Mockito.times(1)).connected(Mockito.any(Channel.class));
 		// Assertions.assertTrue(handler.connectCount > 0);
 		System.out.println("connect count " + 1);
 	}
@@ -120,8 +119,7 @@ public class HeartbeatHandlerTestWithMock2 {
 		public int disconnectCount = 0;
 		public int connectCount = 0;
 
-		public CompletableFuture<Object> reply(ExchangeChannel channel,
-				Object request) throws RemotingException {
+		public CompletableFuture<Object> reply(ExchangeChannel channel, Object request) throws RemotingException {
 			return CompletableFuture.completedFuture(request);
 		}
 
@@ -138,25 +136,21 @@ public class HeartbeatHandlerTestWithMock2 {
 		}
 
 		@Override
-		public void sent(Channel channel, Object message)
-				throws RemotingException {
+		public void sent(Channel channel, Object message) throws RemotingException {
 
 		}
 
 		@Override
-		public void received(Channel channel, Object message)
-				throws RemotingException {
+		public void received(Channel channel, Object message) throws RemotingException {
 			logger.error(this.getClass().getSimpleName() + message.toString());
 		}
 
 		@Override
-		public void caught(Channel channel, Throwable exception)
-				throws RemotingException {
+		public void caught(Channel channel, Throwable exception) throws RemotingException {
 			exception.printStackTrace();
 		}
 
-		public String telnet(Channel channel, String message)
-				throws RemotingException {
+		public String telnet(Channel channel, String message) throws RemotingException {
 			return message;
 		}
 	}
