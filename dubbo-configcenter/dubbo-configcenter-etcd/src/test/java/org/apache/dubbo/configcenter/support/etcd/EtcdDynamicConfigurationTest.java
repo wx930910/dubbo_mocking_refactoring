@@ -50,23 +50,18 @@ public class EtcdDynamicConfigurationTest {
 
 	private static EtcdDynamicConfiguration config;
 
-	public EtcdCluster etcdCluster = EtcdClusterFactory
-			.buildCluster(getClass().getSimpleName(), 3, false, false);
+	public EtcdCluster etcdCluster = EtcdClusterFactory.buildCluster(getClass().getSimpleName(), 3, false, false);
 
 	private static Client client;
 
 	@Test
 	public void testGetConfig() {
 
-		put("/dubbo/config/org.apache.dubbo.etcd.testService/configurators",
-				"hello");
+		put("/dubbo/config/org.apache.dubbo.etcd.testService/configurators", "hello");
 		put("/dubbo/config/test/dubbo.properties", "aaa=bbb");
-		Assert.assertEquals("hello",
-				config.getConfig(
-						"org.apache.dubbo.etcd.testService.configurators",
-						DynamicConfiguration.DEFAULT_GROUP));
-		Assert.assertEquals("aaa=bbb",
-				config.getConfig("dubbo.properties", "test"));
+		Assert.assertEquals("hello", config.getConfig("org.apache.dubbo.etcd.testService.configurators",
+				DynamicConfiguration.DEFAULT_GROUP));
+		Assert.assertEquals("aaa=bbb", config.getConfig("dubbo.properties", "test"));
 	}
 
 	@Test
@@ -90,14 +85,10 @@ public class EtcdDynamicConfigurationTest {
 		Thread.sleep(1000);
 
 		Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
-		Assert.assertEquals(1,
-				listener1.getCount("/dubbo/config/AService/configurators"));
-		Assert.assertEquals(1,
-				listener2.getCount("/dubbo/config/AService/configurators"));
-		Assert.assertEquals(1,
-				listener3.getCount("/dubbo/config/testapp/tagrouters"));
-		Assert.assertEquals(1,
-				listener4.getCount("/dubbo/config/testapp/tagrouters"));
+		Assert.assertEquals(1, listener1.getCount("/dubbo/config/AService/configurators"));
+		Assert.assertEquals(1, listener2.getCount("/dubbo/config/AService/configurators"));
+		Assert.assertEquals(1, listener3.getCount("/dubbo/config/testapp/tagrouters"));
+		Assert.assertEquals(1, listener4.getCount("/dubbo/config/testapp/tagrouters"));
 
 		Assert.assertEquals("new value1", listener1.getValue());
 		Assert.assertEquals("new value1", listener2.getValue());
@@ -117,14 +108,12 @@ public class EtcdDynamicConfigurationTest {
 			this.latch = latch;
 			Mockito.doAnswer(invocation -> {
 				ConfigChangedEvent event = invocation.getArgument(0);
-				Integer count = countMap.computeIfAbsent(event.getKey(),
-						k -> 0);
+				Integer count = countMap.computeIfAbsent(event.getKey(), k -> 0);
 				countMap.put(event.getKey(), ++count);
 				value = event.getContent();
 				latch.countDown();
 				return null;
-			}).when(this.instance)
-					.process(Mockito.any(ConfigChangedEvent.class));
+			}).when(this.instance).process(Mockito.any(ConfigChangedEvent.class));
 		}
 
 		public int getCount(String key) {
@@ -164,8 +153,7 @@ public class EtcdDynamicConfigurationTest {
 
 	private void put(String key, String value) {
 		try {
-			client.getKVClient().put(ByteSequence.from(key, UTF_8),
-					ByteSequence.from(value, UTF_8)).get();
+			client.getKVClient().put(ByteSequence.from(key, UTF_8), ByteSequence.from(value, UTF_8)).get();
 		} catch (Exception e) {
 			System.out.println("Error put value to etcd.");
 		}
@@ -176,19 +164,15 @@ public class EtcdDynamicConfigurationTest {
 
 		etcdCluster.start();
 
-		client = Client.builder().endpoints(etcdCluster.getClientEndpoints())
-				.build();
+		client = Client.builder().endpoints(etcdCluster.getClientEndpoints()).build();
 
 		List<URI> clientEndPoints = etcdCluster.getClientEndpoints();
 
-		String ipAddress = clientEndPoints.get(0).getHost() + ":"
-				+ clientEndPoints.get(0).getPort();
-		String urlForDubbo = "etcd3://" + ipAddress
-				+ "/org.apache.dubbo.etcd.testService";
+		String ipAddress = clientEndPoints.get(0).getHost() + ":" + clientEndPoints.get(0).getPort();
+		String urlForDubbo = "etcd3://" + ipAddress + "/org.apache.dubbo.etcd.testService";
 
 		// timeout in 15 seconds.
-		URL url = URL.valueOf(urlForDubbo).addParameter(SESSION_TIMEOUT_KEY,
-				15000);
+		URL url = URL.valueOf(urlForDubbo).addParameter(SESSION_TIMEOUT_KEY, 15000);
 		config = new EtcdDynamicConfiguration(url);
 	}
 

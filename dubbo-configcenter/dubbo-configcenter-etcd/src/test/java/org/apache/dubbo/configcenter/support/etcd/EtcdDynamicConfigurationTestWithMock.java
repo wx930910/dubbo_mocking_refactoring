@@ -70,7 +70,8 @@ public class EtcdDynamicConfigurationTestWithMock {
 
 	/**
 	 * Test Logic defined in {@link #EtcdDynamicConfiguration#onNext()}. It will
-	 * invoke overridden process()
+	 * invoke overridden process(). Not sure when onNext() was invoked, but I
+	 * think it happened in put() methods.
 	 * 
 	 * @throws Exception
 	 */
@@ -128,10 +129,10 @@ public class EtcdDynamicConfigurationTestWithMock {
 
 		Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
 		// Verify that process was execute once
-		Mockito.verify(listener1, Mockito.times(1)).process(event1.capture());
-		Mockito.verify(listener2, Mockito.times(1)).process(event2.capture());
-		Mockito.verify(listener3, Mockito.times(1)).process(event3.capture());
-		Mockito.verify(listener4, Mockito.times(1)).process(event4.capture());
+		Mockito.verify(listener1).process(event1.capture());
+		Mockito.verify(listener2).process(event2.capture());
+		Mockito.verify(listener3).process(event3.capture());
+		Mockito.verify(listener4).process(event4.capture());
 
 		// Key Assertions
 		Assert.assertEquals("/dubbo/config/AService/configurators", event1.capture().getKey());
