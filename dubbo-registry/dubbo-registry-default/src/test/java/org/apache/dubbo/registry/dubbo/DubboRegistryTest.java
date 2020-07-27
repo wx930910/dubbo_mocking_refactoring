@@ -34,12 +34,10 @@ import org.apache.dubbo.rpc.RpcInvocation;
 import org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 public class DubboRegistryTest {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DubboRegistryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(DubboRegistryTest.class);
 
 	private DubboRegistry dubboRegistry;
 
@@ -55,16 +53,12 @@ public class DubboRegistryTest {
 
 	@BeforeEach
 	public void setUp() {
-		registryURL = new URL(REGISTRY_PROTOCOL, NetUtils.getLocalHost(),
-				NetUtils.getAvailablePort())
-						.addParameter(Constants.CHECK_KEY, false)
-						.setServiceInterface(RegistryService.class.getName());
-		serviceURL = new URL(DubboProtocol.NAME, NetUtils.getLocalHost(),
-				NetUtils.getAvailablePort())
-						.addParameter(Constants.CHECK_KEY, false)
-						.setServiceInterface(RegistryService.class.getName());
+		registryURL = new URL(REGISTRY_PROTOCOL, NetUtils.getLocalHost(), NetUtils.getAvailablePort())
+				.addParameter(Constants.CHECK_KEY, false).setServiceInterface(RegistryService.class.getName());
+		serviceURL = new URL(DubboProtocol.NAME, NetUtils.getLocalHost(), NetUtils.getAvailablePort())
+				.addParameter(Constants.CHECK_KEY, false).setServiceInterface(RegistryService.class.getName());
 
-		registryService = new MockMockDubboRegistryByXiao(registryURL).instance;
+		registryService = new MockDubboRegistry(registryURL);
 
 		invoker = mock(Invoker.class);
 		given(invoker.getUrl()).willReturn(serviceURL);
@@ -108,32 +102,6 @@ public class DubboRegistryTest {
 		assertEquals(0, getNotifiedListeners());
 	}
 
-	private class MockMockDubboRegistryByXiao {
-		public FailbackRegistry instance;
-
-		private volatile boolean isAvailable = false;
-
-		public MockMockDubboRegistryByXiao(URL url) {
-			this.instance = Mockito.mock(FailbackRegistry.class,
-					Mockito.withSettings().useConstructor(url));
-			initalizeMockingInstance();
-		}
-
-		private void initalizeMockingInstance() {
-			Mockito.doAnswer(invocation -> {
-				isAvailable = true;
-				return null;
-			}).when(this.instance).doRegister(Mockito.any(URL.class));
-			Mockito.doAnswer(invocation -> {
-				isAvailable = false;
-				return null;
-			}).when(this.instance).doUnregister(Mockito.any(URL.class));
-			Mockito.doReturn(this.isAvailable).when(this.instance)
-					.isAvailable();
-		}
-
-	}
-
 	private class MockDubboRegistry extends FailbackRegistry {
 
 		private volatile boolean isAvailable = false;
@@ -149,14 +117,14 @@ public class DubboRegistryTest {
 		}
 
 		@Override
-		public void doSubscribe(URL url, NotifyListener listener) {
-			logger.info("Begin to subscribe: " + url);
-		}
-
-		@Override
 		public void doUnregister(URL url) {
 			logger.info("Begin to ungister: " + url);
 			isAvailable = false;
+		}
+
+		@Override
+		public void doSubscribe(URL url, NotifyListener listener) {
+			logger.info("Begin to subscribe: " + url);
 		}
 
 		@Override
@@ -168,7 +136,6 @@ public class DubboRegistryTest {
 		public boolean isAvailable() {
 			return isAvailable;
 		}
-
 	}
 
 	private int getNotifiedListeners() {

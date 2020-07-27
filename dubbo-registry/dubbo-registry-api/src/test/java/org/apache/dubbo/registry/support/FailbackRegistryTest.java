@@ -66,7 +66,7 @@ public class FailbackRegistryTest {
         // the latest latch just for 3. Because retry method has been removed.
         final CountDownLatch latch = new CountDownLatch(2);
 
-        NotifyListener listner = new NotifyListener() {
+        NotifyListener listener = new NotifyListener() {
             @Override
             public void notify(List<URL> urls) {
                 notified.set(Boolean.TRUE);
@@ -76,8 +76,8 @@ public class FailbackRegistryTest {
         registry.setBad(true);
         registry.register(serviceUrl);
         registry.unregister(serviceUrl);
-        registry.subscribe(serviceUrl.setProtocol(CONSUMER_PROTOCOL).addParameters(CollectionUtils.toStringMap("check", "false")), listner);
-        registry.unsubscribe(serviceUrl.setProtocol(CONSUMER_PROTOCOL).addParameters(CollectionUtils.toStringMap("check", "false")), listner);
+        registry.subscribe(serviceUrl.setProtocol(CONSUMER_PROTOCOL).addParameters(CollectionUtils.toStringMap("check", "false")), listener);
+        registry.unsubscribe(serviceUrl.setProtocol(CONSUMER_PROTOCOL).addParameters(CollectionUtils.toStringMap("check", "false")), listener);
 
         //Failure can not be called to listener.
         assertEquals(false, notified.get());

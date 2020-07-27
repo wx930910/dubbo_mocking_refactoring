@@ -56,8 +56,7 @@ class AbstractReferenceBuilderTest {
 	void generic1() {
 		ReferenceBuilder builder = new ReferenceBuilder();
 		builder.generic(GENERIC_SERIALIZATION_BEAN);
-		Assertions.assertEquals(GENERIC_SERIALIZATION_BEAN,
-				builder.build().getGeneric());
+		Assertions.assertEquals(GENERIC_SERIALIZATION_BEAN, builder.build().getGeneric());
 	}
 
 	@Test
@@ -111,9 +110,8 @@ class AbstractReferenceBuilderTest {
 	@Test
 	void build() {
 		ReferenceBuilder builder = new ReferenceBuilder();
-		builder.check(true).init(false).generic(true).injvm(false).lazy(true)
-				.reconnect("reconnect").sticky(false).version("version")
-				.group("group").id("id").prefix("prefix");
+		builder.check(true).init(false).generic(true).injvm(false).lazy(true).reconnect("reconnect").sticky(false)
+				.version("version").group("group").id("id").prefix("prefix");
 
 		AbstractReferenceConfig config = builder.build();
 		AbstractReferenceConfig config2 = builder.build();
@@ -133,11 +131,11 @@ class AbstractReferenceBuilderTest {
 		Assertions.assertNotSame(config, config2);
 	}
 
-	private static class ReferenceBuilder extends
-			AbstractReferenceBuilder<AbstractReferenceConfig, ReferenceBuilder> {
+	private static class ReferenceBuilder extends AbstractReferenceBuilder<AbstractReferenceConfig, ReferenceBuilder> {
 
 		public AbstractReferenceConfig build() {
-			AbstractReferenceConfig parameterConfig = new MockReferenceConfig().instance;
+			AbstractReferenceConfig parameterConfig = Mockito.mock(AbstractReferenceConfig.class,
+					Mockito.CALLS_REAL_METHODS);
 			super.build(parameterConfig);
 
 			return parameterConfig;
@@ -149,12 +147,4 @@ class AbstractReferenceBuilderTest {
 		}
 	}
 
-	private static class MockReferenceConfig {
-		public AbstractReferenceConfig instance;
-
-		public MockReferenceConfig() {
-			this.instance = Mockito.mock(AbstractReferenceConfig.class,
-					Mockito.CALLS_REAL_METHODS);
-		}
-	}
 }
