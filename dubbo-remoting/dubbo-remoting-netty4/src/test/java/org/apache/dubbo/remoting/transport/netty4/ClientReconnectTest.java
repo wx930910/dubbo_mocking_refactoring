@@ -55,49 +55,29 @@ public class ClientReconnectTest {
 			client.close(2000);
 			server.close(2000);
 		}
-		int port = NetUtils.getAvailablePort();
-		Client client = startClient(port, 20000);
-		Assertions.assertFalse(client.isConnected());
-		RemotingServer server = startServer(port);
-		for (int i = 0; i < 5; i++) {
-			Thread.sleep(200);
+		{
+			int port = NetUtils.getAvailablePort();
+			Client client = startClient(port, 20000);
+			Assertions.assertFalse(client.isConnected());
+			RemotingServer server = startServer(port);
+			for (int i = 0; i < 5; i++) {
+				Thread.sleep(200);
+			}
+			Assertions.assertFalse(client.isConnected());
+			client.close(2000);
+			server.close(2000);
 		}
-		Assertions.assertFalse(client.isConnected());
-		client.close(2000);
-		server.close(2000);
 	}
 
-	public Client startClient(int port, int heartbeat)
-			throws RemotingException {
-		final String url = "exchange://127.0.0.1:" + port
-				+ "/client.reconnect.test?client=netty4&check=false&"
+	public Client startClient(int port, int heartbeat) throws RemotingException {
+		final String url = "exchange://127.0.0.1:" + port + "/client.reconnect.test?client=netty4&check=false&"
 				+ Constants.HEARTBEAT_KEY + "=" + heartbeat;
 		return Exchangers.connect(url);
 	}
 
 	public RemotingServer startServer(int port) throws RemotingException {
-		final String url = "exchange://127.0.0.1:" + port
-				+ "/client.reconnect.test?server=netty4";
-		return Exchangers.bind(url, new MockHandlerAdapter().instance);
-	}
-
-	static class MockHandlerAdapter {
-		public ExchangeHandlerAdapter instance;
-
-		public MockHandlerAdapter() {
-			this.instance = Mockito.mock(ExchangeHandlerAdapter.class);
-			try {
-				Mockito.doAnswer(invocation -> null).when(this.instance)
-						.connected(Mockito.any(Channel.class));
-				Mockito.doAnswer(invocation -> null).when(this.instance)
-						.disconnected(Mockito.any(Channel.class));
-				Mockito.doAnswer(invocation -> null).when(this.instance).caught(
-						Mockito.any(Channel.class),
-						Mockito.any(Throwable.class));
-			} catch (RemotingException e) {
-				e.printStackTrace();
-			}
-		}
+		final String url = "exchange://127.0.0.1:" + port + "/client.reconnect.test?server=netty4";
+		return Exchangers.bind(url, Mockito.mock(ExchangeHandlerAdapter.class, Mockito.CALLS_REAL_METHODS));
 	}
 
 	static class HandlerAdapter extends ExchangeHandlerAdapter {
@@ -110,9 +90,7 @@ public class ClientReconnectTest {
 		}
 
 		@Override
-		public void caught(Channel channel, Throwable exception)
-				throws RemotingException {
+		public void caught(Channel channel, Throwable exception) throws RemotingException {
 		}
 	}
-
 }
