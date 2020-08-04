@@ -13,31 +13,19 @@ import com.alibaba.dubbo.rpc.Invocation;
 public class CacheTestWithMock {
 	@Test
 	public void testCacheFactory() {
-		URL url = URL.valueOf(
-				"test://test:11/test?cache=jacache&.cache.write.expire=1");
+		URL url = URL.valueOf("test://test:11/test?cache=jacache&.cache.write.expire=1");
 		CacheFactory cacheFactory = new MyCacheFactory();
 		Invocation invocation = Mockito.mock(Invocation.class);
-		Mockito.doReturn(null).when(invocation).getTargetServiceUniqueName();
-		Mockito.doReturn(null).when(invocation).getMethodName();
-		Mockito.doReturn(new Class[0]).when(invocation).getParameterTypes();
-		Mockito.doReturn(new Object[0]).when(invocation).getArguments();
-		Mockito.doReturn(null).when(invocation).getAttachments();
-		Mockito.doReturn(null).when(invocation)
-				.getAttachment(Mockito.anyString());
-		Mockito.doReturn(null).when(invocation)
-				.getAttachment(Mockito.anyString(), Mockito.anyString());
-		Mockito.doReturn(null).when(invocation).getInvoker();
-		Mockito.doReturn(null).when(invocation).put(Mockito.any(Object.class),
-				Mockito.any(Object.class));
-		Mockito.doReturn(null).when(invocation).get(Mockito.any(Object.class));
-		Mockito.doReturn(null).when(invocation).getAttributes();
+		// Mockito.when(invocation.getParameterTypes()).thenReturn(new
+		// Class[0]);
+		// Mockito.when(invocation.getArguments()).thenReturn(new Object[0]);
 
 		Cache cache = cacheFactory.getCache(url, invocation);
 		cache.put("testKey", "testValue");
 
 		org.apache.dubbo.cache.CacheFactory factory = cacheFactory;
-		org.apache.dubbo.common.URL u = org.apache.dubbo.common.URL.valueOf(
-				"test://test:11/test?cache=jacache&.cache.write.expire=1");
+		org.apache.dubbo.common.URL u = org.apache.dubbo.common.URL
+				.valueOf("test://test:11/test?cache=jacache&.cache.write.expire=1");
 		org.apache.dubbo.rpc.Invocation inv = new RpcInvocation();
 		org.apache.dubbo.cache.Cache c = factory.getCache(u, inv);
 		String v = (String) c.get("testKey");

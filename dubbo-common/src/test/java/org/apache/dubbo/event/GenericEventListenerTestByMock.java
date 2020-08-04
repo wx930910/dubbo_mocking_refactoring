@@ -39,17 +39,17 @@ public class GenericEventListenerTestByMock {
 		private EchoEvent echoEvent;
 
 		public MockGenericEventListener() {
-			this.instance = Mockito.mock(GenericEventListener.class,
-					Mockito.CALLS_REAL_METHODS);
+			this.instance = Mockito.mock(GenericEventListener.class, Mockito.CALLS_REAL_METHODS);
 			Mockito.doAnswer(invocation -> {
+				System.out.println("??");
 				this.echoEvent = invocation.getArgument(0);
 				return null;
 			}).when(this.instance).onEvent(Mockito.any(EchoEvent.class));
 		}
 
-		public void onEvent(EchoEvent echoEvent) {
-			this.echoEvent = echoEvent;
-		}
+		// public void onEvent(EchoEvent echoEvent) {
+		// this.echoEvent = echoEvent;
+		// }
 
 		public void event(EchoEvent echoEvent) {
 			assertEquals("Hello,World", echoEvent.getSource());

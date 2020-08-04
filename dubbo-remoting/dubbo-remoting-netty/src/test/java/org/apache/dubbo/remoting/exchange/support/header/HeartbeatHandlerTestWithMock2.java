@@ -48,7 +48,7 @@ public class HeartbeatHandlerTestWithMock2 {
 		ExchangeHandler handler = Mockito.mock(ExchangeHandler.class);
 
 		server = Exchangers.bind(serverURL, handler);
-		System.out.println("Server bind successfully");
+		System.out.println("testServerHeartbeat Server bind successfully");
 
 		FakeChannelHandlers.setTestingChannelHandlers();
 		serverURL = serverURL.removeParameter(Constants.HEARTBEAT_KEY);
@@ -73,7 +73,7 @@ public class HeartbeatHandlerTestWithMock2 {
 		// Mock interface
 		ExchangeHandler handler = Mockito.mock(ExchangeHandler.class);
 		server = Exchangers.bind(serverURL, handler);
-		System.out.println("Server bind successfully");
+		System.out.println("testHeartbeat Server bind successfully");
 
 		client = Exchangers.connect(serverURL);
 		Thread.sleep(10000);
@@ -103,7 +103,7 @@ public class HeartbeatHandlerTestWithMock2 {
 		// Mock interface
 		ExchangeHandler handler = Mockito.mock(ExchangeHandler.class);
 		server = Exchangers.bind(serverURL, handler);
-		System.out.println("Server bind successfully");
+		System.out.println("testClientHeartbeat Server bind successfully");
 
 		FakeChannelHandlers.resetChannelHandlers();
 		serverURL = serverURL.addParameter(Constants.HEARTBEAT_KEY, 1000);
