@@ -134,6 +134,7 @@ class AbstractReferenceBuilderTest {
 	private static class ReferenceBuilder extends AbstractReferenceBuilder<AbstractReferenceConfig, ReferenceBuilder> {
 
 		public AbstractReferenceConfig build() {
+			// ReferenceConfig parameterConfig = new ReferenceConfig();
 			AbstractReferenceConfig parameterConfig = Mockito.mock(AbstractReferenceConfig.class,
 					Mockito.CALLS_REAL_METHODS);
 			super.build(parameterConfig);
@@ -145,6 +146,9 @@ class AbstractReferenceBuilderTest {
 		protected ReferenceBuilder getThis() {
 			return this;
 		}
+	}
+
+	private static class ReferenceConfig extends AbstractReferenceConfig {
 	}
 
 }
