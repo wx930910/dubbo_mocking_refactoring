@@ -402,9 +402,9 @@ public class AbstractMetadataReportTest {
 
 	private static class RetryMetadataReport extends AbstractMetadataReport {
 
-		Map<String, String> store = new ConcurrentHashMap<>();
-		int needRetryTimes;
-		int executeTimes = 0;
+		private Map<String, String> store = new ConcurrentHashMap<>();
+		private int needRetryTimes;
+		private int executeTimes = 0;
 
 		public RetryMetadataReport(URL metadataReportURL, int needRetryTimes) {
 			super(metadataReportURL);
