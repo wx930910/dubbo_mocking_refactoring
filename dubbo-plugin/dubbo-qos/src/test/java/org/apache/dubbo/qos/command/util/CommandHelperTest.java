@@ -16,6 +16,15 @@
  */
 package org.apache.dubbo.qos.command.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
 import org.apache.dubbo.qos.command.GreetingCommand;
 import org.apache.dubbo.qos.command.impl.Help;
 import org.apache.dubbo.qos.command.impl.Ls;
@@ -25,34 +34,27 @@ import org.apache.dubbo.qos.command.impl.Quit;
 import org.apache.dubbo.qos.command.impl.Ready;
 import org.apache.dubbo.qos.command.impl.Version;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@RunWith(PowerMockRunner.class)
 public class CommandHelperTest {
-    @Test
-    public void testHasCommand() throws Exception {
-        assertTrue(CommandHelper.hasCommand("greeting"));
-        assertFalse(CommandHelper.hasCommand("not-exiting"));
-    }
+	@Test
+	public void testHasCommand() throws Exception {
+		assertTrue(CommandHelper.hasCommand("greeting"));
+		assertFalse(CommandHelper.hasCommand("not-exiting"));
+	}
 
-    @Test
-    public void testGetAllCommandClass() throws Exception {
-        List<Class<?>> classes = CommandHelper.getAllCommandClass();
-        assertThat(classes,
-                containsInAnyOrder(GreetingCommand.class, Help.class, Ls.class, Offline.class, Online.class, Quit.class,
-                        Ready.class, Version.class));
-    }
+	@Test
+	public void testGetAllCommandClass() throws Exception {
+		List<Class<?>> classes = CommandHelper.getAllCommandClass();
+		assertThat(classes, containsInAnyOrder(GreetingCommand.class, Help.class, Ls.class, Offline.class, Online.class,
+				Quit.class, Ready.class, Version.class));
+	}
 
-    @Test
-    public void testGetCommandClass() throws Exception {
-        assertThat(CommandHelper.getCommandClass("greeting"), equalTo(GreetingCommand.class));
-        assertNull(CommandHelper.getCommandClass("not-exiting"));
-    }
+	@Test
+	public void testGetCommandClass() throws Exception {
+		assertThat(CommandHelper.getCommandClass("greeting"), equalTo(GreetingCommand.class));
+		assertNull(CommandHelper.getCommandClass("not-exiting"));
+	}
 }

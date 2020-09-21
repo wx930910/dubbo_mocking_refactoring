@@ -109,8 +109,8 @@ public class HeartbeatHandlerTestWithMock2 {
 		serverURL = serverURL.addParameter(Constants.HEARTBEAT_KEY, 1000);
 		client = Exchangers.connect(serverURL);
 		Thread.sleep(10000);
-		// Verify disconnect been invoked only once.
-		Mockito.verify(handler, Mockito.times(1)).connected(Mockito.any(Channel.class));
+		// Verify disconnect been invoked at least once
+		Mockito.verify(handler, Mockito.atLeast(1)).connected(Mockito.any(Channel.class));
 		// Assertions.assertTrue(handler.connectCount > 0);
 		System.out.println("connect count " + 1);
 	}

@@ -17,44 +17,98 @@
 
 package org.apache.dubbo.filter;
 
+import static org.apache.dubbo.common.constants.CommonConstants.DUBBO_VERSION_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.GROUP_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.PATH_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.TIMEOUT_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.VERSION_KEY;
+import static org.apache.dubbo.rpc.Constants.TOKEN_KEY;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.dubbo.rpc.RpcException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.alibaba.dubbo.rpc.Filter;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class FilterTest {
 
-    Filter myFilter = new MyFilter();
+	static Filter myFilter;
+	static Integer count = 0;
 
-    @Test
-    public void testInvokeException() {
-        try {
-            Invoker<FilterTest> invoker = new LegacyInvoker<FilterTest>(null);
-            Invocation invocation = new LegacyInvocation("aa");
-            myFilter.invoke(invoker, invocation);
-            fail();
-        } catch (RpcException e) {
-            Assertions.assertTrue(e.getMessage().contains("arg0 illegal"));
-        }
-    }
+	static {
+		myFilter = Mockito.mock(Filter.class);
+		Mockito.when(myFilter.invoke(Mockito.any(Invoker.class), Mockito.any(Invocation.class))).thenAnswer(invo -> {
+			Invoker<?> invoker = invo.getArgument(0);
+			Invocation invocation = invo.getArgument(1);
+			count++;
 
-    @Test
-    public void testDefault() {
-        Invoker<FilterTest> invoker = new LegacyInvoker<FilterTest>(null);
-        Invocation invocation = new LegacyInvocation("bbb");
-        Result res = myFilter.invoke(invoker, invocation);
-        System.out.println(res);
-    }
+			if (invocation.getArguments()[0].equals("aa")) {
+				throw new RpcException(new IllegalArgumentException("arg0 illegal"));
+			}
 
-    @AfterAll
-    public static void tear() {
-        Assertions.assertEquals(2, MyFilter.count);
-    }
+			Result tmp = invoker.invoke(invocation);
+			return tmp;
+		});
+	}
+
+	@Test
+	public void testInvokeException() {
+		Invocation invocation = Mockito.mock(Invocation.class);
+		String arg0 = "aa";
+		Mockito.when(invocation.getTargetServiceUniqueName()).thenReturn(null);
+		Mockito.when(invocation.getMethodName()).thenReturn("echo");
+		Mockito.when(invocation.getParameterTypes()).thenReturn(new Class[] { String.class });
+		Mockito.when(invocation.getArguments()).thenReturn(new Object[] { arg0 });
+		Mockito.when(invocation.getAttachments()).thenAnswer(invo -> {
+			Map<String, String> attachments = new HashMap<String, String>();
+			attachments.put(PATH_KEY, "dubbo");
+			attachments.put(GROUP_KEY, "dubbo");
+			attachments.put(VERSION_KEY, "1.0.0");
+			attachments.put(DUBBO_VERSION_KEY, "1.0.0");
+			attachments.put(TOKEN_KEY, "sfag");
+			attachments.put(TIMEOUT_KEY, "1000");
+			return attachments;
+		});
+		Mockito.when(invocation.getInvoker()).thenReturn(null);
+		Mockito.when(invocation.put(Mockito.any(), Mockito.any())).thenReturn(null);
+		Mockito.when(invocation.get(Mockito.any())).thenReturn(null);
+		Mockito.when(invocation.getAttributes()).thenReturn(null);
+		Mockito.when(invocation.getAttachment(Mockito.anyString())).thenAnswer(invo -> {
+			return invocation.getAttachments().get(invo.getArgument(0));
+		});
+		Mockito.when(invocation.getAttachment(Mockito.anyString(), Mockito.anyString())).thenAnswer(invo -> {
+			String key = invo.getArgument(0);
+			return invocation.getAttachments().get(key);
+		});
+		try {
+			Invoker<FilterTest> invoker = new LegacyInvoker<FilterTest>(null);
+			// Invocation invocation = new LegacyInvocation("aa");
+			myFilter.invoke(invoker, invocation);
+			fail();
+		} catch (RpcException e) {
+			Assertions.assertTrue(e.getMessage().contains("arg0 illegal"));
+		}
+	}
+
+	@Test
+	public void testDefault() {
+		Invoker<FilterTest> invoker = new LegacyInvoker<FilterTest>(null);
+		Invocation invocation = new LegacyInvocation("bbb");
+		Result res = myFilter.invoke(invoker, invocation);
+		System.out.println(res);
+	}
+
+	@AfterAll
+	public static void tear() {
+		Assertions.assertEquals(2, count);
+	}
 }

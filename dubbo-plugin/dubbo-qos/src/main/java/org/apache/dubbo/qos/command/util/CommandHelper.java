@@ -16,49 +16,50 @@
  */
 package org.apache.dubbo.qos.command.util;
 
-import org.apache.dubbo.common.extension.ExtensionLoader;
-import org.apache.dubbo.qos.command.BaseCommand;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.dubbo.common.extension.ExtensionLoader;
+import org.apache.dubbo.qos.command.BaseCommand;
+
 public class CommandHelper {
 
-    private CommandHelper() {
-    }
+	private CommandHelper() {
+	}
 
-    public static boolean hasCommand(String commandName) {
+	public static boolean hasCommand(String commandName) {
 
-        BaseCommand command = null;
-        try {
-            command = ExtensionLoader.getExtensionLoader(BaseCommand.class).getExtension(commandName);
-        } catch (Throwable throwable) {
-            return false;
-        }
+		BaseCommand command = null;
+		try {
+			command = ExtensionLoader.getExtensionLoader(BaseCommand.class).getExtension(commandName);
+		} catch (Throwable throwable) {
+			return false;
+		}
 
-        return command != null;
+		return command != null;
 
-    }
+	}
 
-    public static List<Class<?>> getAllCommandClass() {
-        final Set<String> commandList = ExtensionLoader.getExtensionLoader(BaseCommand.class).getSupportedExtensions();
-        final List<Class<?>> classes = new ArrayList<Class<?>>();
+	public static List<Class<?>> getAllCommandClass() {
+		final Set<String> commandList = ExtensionLoader.getExtensionLoader(BaseCommand.class).getSupportedExtensions();
+		final List<Class<?>> classes = new ArrayList<Class<?>>();
 
-        for (String commandName : commandList) {
-            BaseCommand command = ExtensionLoader.getExtensionLoader(BaseCommand.class).getExtension(commandName);
-            classes.add(command.getClass());
-        }
+		for (String commandName : commandList) {
+			BaseCommand command = ExtensionLoader.getExtensionLoader(BaseCommand.class).getExtension(commandName);
+			classes.add(command.getClass());
+		}
 
-        return classes;
-    }
+		return classes;
+	}
 
-
-    public static Class<?> getCommandClass(String commandName) {
-        if (hasCommand(commandName)) {
-            return ExtensionLoader.getExtensionLoader(BaseCommand.class).getExtension(commandName).getClass();
-        } else {
-            return null;
-        }
-    }
+	public static Class<?> getCommandClass(String commandName) {
+		if (hasCommand(commandName)) {
+			System.out.println(
+					ExtensionLoader.getExtensionLoader(BaseCommand.class).getExtension(commandName).getClass());
+			return ExtensionLoader.getExtensionLoader(BaseCommand.class).getExtension(commandName).getClass();
+		} else {
+			return null;
+		}
+	}
 }
