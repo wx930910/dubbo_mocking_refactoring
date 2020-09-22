@@ -34,6 +34,7 @@ import org.apache.dubbo.rpc.RpcInvocation;
 import org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class DubboRegistryTest {
 
@@ -49,7 +50,9 @@ public class DubboRegistryTest {
 
 	private Invoker<RegistryService> invoker;
 
-	private RegistryService registryService;
+	private FailbackRegistry registryService;
+	// Extract fields from test class
+	private volatile boolean isAvailable = false;
 
 	@BeforeEach
 	public void setUp() {
@@ -58,7 +61,36 @@ public class DubboRegistryTest {
 		serviceURL = new URL(DubboProtocol.NAME, NetUtils.getLocalHost(), NetUtils.getAvailablePort())
 				.addParameter(Constants.CHECK_KEY, false).setServiceInterface(RegistryService.class.getName());
 
-		registryService = new MockDubboRegistry(registryURL);
+		// registryService = new MockDubboRegistry(registryURL);
+		// Mock production class
+		registryService = Mockito.mock(FailbackRegistry.class,
+				Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor(registryURL));
+		// Stub methods
+		Mockito.doAnswer(invo -> {
+			URL url = invo.getArgument(0);
+			logger.info("Begin to register: " + url);
+			isAvailable = true;
+			return null;
+		}).when(registryService).doRegister(Mockito.any());
+		Mockito.doAnswer(invo -> {
+			URL url = invo.getArgument(0);
+			logger.info("Begin to ungister: " + url);
+			isAvailable = false;
+			return null;
+		}).when(registryService).doUnregister(Mockito.any());
+		Mockito.doAnswer(invo -> {
+			URL url = invo.getArgument(0);
+			NotifyListener listener = invo.getArgument(1);
+			logger.info("Begin to subscribe: " + url);
+			return null;
+		}).when(registryService).doSubscribe(Mockito.any(), Mockito.any());
+		Mockito.doAnswer(invo -> {
+			URL url = invo.getArgument(0);
+			NotifyListener listener = invo.getArgument(1);
+			logger.info("Begin to unSubscribe: " + url);
+			return null;
+		}).when(registryService).doSubscribe(Mockito.any(), Mockito.any());
+		Mockito.when(registryService.isAvailable()).thenReturn(isAvailable);
 
 		invoker = mock(Invoker.class);
 		given(invoker.getUrl()).willReturn(serviceURL);
